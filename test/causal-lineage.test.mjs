@@ -60,4 +60,14 @@ test("causal lineage binds MCP → admission → instance → processor → evid
   assert.match(result.transition.receipt.receiptHash, /^[0-9a-f]{64}$/);
   assert.equal(result.transition.receipt.preCommit, "a".repeat(40));
   assert.equal(result.transition.receipt.postCommit, "b".repeat(40));
+  assert.equal(result.transition.receipt.causalBinding.messageId, result.message.messageId);
+  assert.equal(result.transition.receipt.causalBinding.proposalId, result.proposal.proposalId);
+  assert.equal(result.transition.receipt.causalBinding.admissionId, result.admission.admissionId);
+  assert.equal(result.transition.receipt.causalBinding.instanceId, result.instanceId);
+  assert.equal(result.transition.receipt.causalBinding.executionId, result.executionId);
+  assert.equal(result.transition.receipt.causalBinding.evidenceHash, result.processorEvidence.evidenceHash);
+  assert.equal(result.transition.receipt.causalBinding.processorReceiptId, result.lineage.stages.PROCESSOR_RECEIPT.receiptId);
+  assert.equal(result.transition.receipt.causalBinding.processorFinalReceiptHash, result.lineage.stages.PROCESSOR_RECEIPT.finalReceiptHash);
+  assert.match(result.lineage.stages.REPOSITORY_TRANSITION.causalBindingHash, /^[0-9a-f]{64}$/);
+  assert.notEqual(result.lineage.stages.PROCESSOR_RECEIPT.receiptId, result.processorEvidence.evidenceHash);
 });
