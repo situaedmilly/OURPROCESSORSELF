@@ -1,0 +1,12 @@
+name: OURPROCESSORSELF Runner Probe
+
+on:
+  push:
+    branches:
+      - "mutation/**"
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "RUNNER_PROBE_OK"
