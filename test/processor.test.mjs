@@ -7,3 +7,18 @@ const receipts=cpu.run({maxCycles:16});
 assert.equal(cpu.state.halted,true);assert.equal(cpu.state.registers[2],6);assert.equal(cpu.state.memory[0x20],6);assert.equal(receipts.length,5);assert.equal(receipts.at(-1).status,"EXECUTED");
 assert.throws(()=>new OurselfProcessor({program:Uint8Array.from([0xff,0,0,0])}).step(),e=>e instanceof ProcessorTrap&&e.code==="TRAP_0");
 console.log("OURPROCESSORSELF tests: PASS");
+
+
+const firstHash=receipts[0].receiptHash;
+assert.match(firstHash,/^[0-9a-f]{64}$/);
+assert.equal(receipts[1].previousReceiptHash,firstHash);
+assert.match(receipts.at(-1).postStateHash,/^[0-9a-f]{64}$/);
+
+const evidence=cpu.sealEvidence();
+assert.equal(evidence.schema,"OURSELF.PROCESSOR.EXECUTION_EVIDENCE.v0.1");
+assert.equal(evidence.receiptHashes.length,receipts.length);
+assert.equal(evidence.receiptHashes[0],firstHash);
+assert.equal(evidence.preStateHash,receipts[0].preStateHash);
+assert.equal(evidence.postStateHash,receipts.at(-1).postStateHash);
+assert.match(evidence.programHash,/^[0-9a-f]{64}$/);
+assert.match(evidence.evidenceHash,/^[0-9a-f]{64}$/);
