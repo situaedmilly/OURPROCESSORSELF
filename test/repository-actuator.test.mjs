@@ -28,7 +28,7 @@ async function fixture() {
   await git(cwd, "add", "state.txt");
   await git(cwd, "commit", "-q", "-m", "C2");
   const c2 = (await git(cwd, "rev-parse", "HEAD")).stdout.trim();
-  return {cwd, c1, c2};
+  await git(cwd, "branch", "cpu", c1);\n  await git(cwd, "update-ref", "refs/heads/cpu", c1);\n  return {cwd, c1, c2};
 }
 
 test("actuator rejects unauthorized UPDATE_REF before mutation", async () => {
@@ -40,7 +40,7 @@ test("actuator rejects unauthorized UPDATE_REF before mutation", async () => {
     const transition = {receipt:{schema:"OURSELF.GITHUBCOMPUTERMORPH.TRANSITION_RECEIPT.v0.2", from:"input", to:"cpu", operation:"UPDATE_REF", preCommit:f.c1, postCommit:f.c2, receiptHash:"x", causalBinding:{messageId:"MSG-ACT-REJECT"}}};
     const admission = admitUpdateRef({machine, transition, authorized:false, bounded:true});
     assert.equal(admission.status, "REJECTED");
-    assert.equal((await git(f.cwd, "rev-parse", "HEAD")).stdout.trim(), f.c2);
+    assert.equal((await git(f.cwd, "rev-parse", "refs/heads/cpu")).stdout.trim(), f.c1);
   } finally { await rm(f.cwd, {recursive:true, force:true}); }
 });
 
@@ -61,7 +61,7 @@ test("admitted UPDATE_REF mutates and independently reads back actual ref", asyn
     assert.equal(result.refMutation, true);
     assert.equal(result.readback.verified, true);
     assert.match(result.receiptHash, /^[0-9a-f]{64}$/);
-    assert.equal((await git(f.cwd, "rev-parse", "HEAD")).stdout.trim(), f.c2);
+    assert.equal((await git(f.cwd, "rev-parse", "refs/heads/cpu")).stdout.trim(), f.c2);
   } finally { await rm(f.cwd, {recursive:true, force:true}); }
 });
 
@@ -72,6 +72,6 @@ test("pre-state mismatch fails without mutation", async () => {
     const transition = {receipt:{schema:"OURSELF.GITHUBCOMPUTERMORPH.TRANSITION_RECEIPT.v0.2", from:"input", to:"cpu", operation:"UPDATE_REF", preCommit:"d".repeat(40), postCommit:f.c2, receiptHash:"x", causalBinding:{messageId:"MSG-ACT-002"}}};
     const admission = admitUpdateRef({machine, transition, authorized:true, bounded:true});
     assert.equal(admission.status, "REJECTED");
-    assert.equal((await git(f.cwd, "rev-parse", "HEAD")).stdout.trim(), f.c2);
+    assert.equal((await git(f.cwd, "rev-parse", "refs/heads/cpu")).stdout.trim(), f.c1);
   } finally { await rm(f.cwd, {recursive:true, force:true}); }
 });
