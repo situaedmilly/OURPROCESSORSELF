@@ -28,6 +28,7 @@ export const TRANSITION = Object.freeze({
   ANCHOR: "ANCHOR",
   PROJECT: "PROJECT",
   PURGE: "PURGE",
+  UPDATE_REF: "UPDATE_REF",
 });
 
 export function createSurfaceState({surface, ref, commit, status="READY"}={}) {
