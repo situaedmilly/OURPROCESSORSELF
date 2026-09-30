@@ -1,0 +1,11 @@
+{
+  "schema": "OURSELF.PROCESSOR.V0.3.RUNTIME_WITNESS.v1",
+  "runtime": {"node": "v22.16.0", "platform": "linux"},
+  "instance": {"schema": "OURSELF.PROCESSOR.EXECUTION_INSTANCE.v0.2", "instanceId": "inst_v03_runtime_001", "parentInstance": null, "eventId": "evt_v03_runtime_001", "proposalId": "proposal_v03_runtime_001", "policyVersion": "policy@0.2", "processorVersion": "OURSELF-ISA@0.1", "programHash": "0db70a03", "preStateHash": "EMPTY_STATE", "capabilityCommitment": "TEST_CAPABILITY", "executionBounds": {"maxCycles": 16}, "status": "ADMITTED", "receiptId": null},
+  "execution": {"status": "EXECUTED", "steps": 4, "observation": {"halted": true, "register2": 12, "cycles": 4}},
+  "receipt": {"schema": "OURSELF.PROCESSOR.RECEIPT.v0.2", "instanceId": "inst_v03_runtime_001", "executionStatus": "EXECUTED", "observations": [{"halted": true, "register2": 12, "cycles": 4}], "effect": {"register2": 12}, "evidence": {"admission": true, "receiptIsEvidence": true, "receiptIsNotEffect": true}},
+  "evidence": {"schema": "OURSELF.PROCESSOR.EXECUTION_EVIDENCE.v0.3", "instanceId": "inst_v03_runtime_001", "parentEvidenceHash": null, "preimageHash": "198b147c0fdec531d02b3779d96f9eaecc7e431527da39052b55bec261ec056d", "observationHash": "a7a5eea93c730f1c5f3cdc41d2470abb25a8758dc68974c3f74698737e6af90a", "receiptHash": "4121ac51d0cdd52a99c4ef137cb1dcef01552982260d2363ae5077562be6c406", "evidenceHash": "ea68cc11228e9aa022593e8b0b3117b60deafa9176d99f4661b6a7fd7548c00e"},
+  "evidenceAdmission": {"schema": "OURSELF.PROCESSOR.EVIDENCE_ADMISSION.v0.3", "status": "ADMITTED", "reasons": [], "evidenceId": "ea68cc11228e9aa022593e8b0b3117b60deafa9176d99f4661b6a7fd7548c00e"},
+  "tamperAdmission": {"schema": "OURSELF.PROCESSOR.EVIDENCE_ADMISSION.v0.3", "status": "REJECTED", "reasons": ["RECEIPT_HASH_MISMATCH", "EVIDENCE_HASH_MISMATCH"], "evidenceId": "ea68cc11228e9aa022593e8b0b3117b60deafa9176d99f4661b6a7fd7548c00e"},
+  "witnessHash": "aad156acec6cb6d75e4f4fee72dc59f53efda874c24d86c071855c5086c13e9c"
+}
