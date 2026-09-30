@@ -6,29 +6,28 @@ export function sealExecutionEvidence({
   processorVersion = "OURPROCESSORSELF@0.1",
   isa,
   program,
-  preState,
-  receipts,
-  postState,
+  preState = null,
+  preStateHash = null,
+  receipts = [],
+  postState = null,
+  postStateHash = null,
   previousEvidenceHash = null,
 } = {}) {
   const programHash = sha256(Array.from(program ?? []));
-  const preStateHash = sha256(preState);
-  const postStateHash = sha256(postState);
-  const receiptHashes = (receipts ?? []).map((receipt) => sha256(receipt));
+  const resolvedPreStateHash = preStateHash ?? sha256(preState);
+  const resolvedPostStateHash = postStateHash ?? sha256(postState);
+  const receiptHashes = receipts.map((receipt) => receipt.receiptHash ?? sha256(receipt));
 
-  const evidence = {
+  const body = {
     schema: EVIDENCE_SCHEMA,
     processorVersion,
     isa,
     programHash,
-    preStateHash,
+    preStateHash: resolvedPreStateHash,
     receiptHashes,
-    postStateHash,
+    postStateHash: resolvedPostStateHash,
     previousEvidenceHash,
   };
 
-  return Object.freeze({
-    ...evidence,
-    evidenceHash: sha256(evidence),
-  });
+  return Object.freeze({...body,evidenceHash:sha256(body)});
 }
