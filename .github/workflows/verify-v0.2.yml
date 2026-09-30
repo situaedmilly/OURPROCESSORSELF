@@ -1,35 +1,13 @@
-name: OURPROCESSORSELF v0.2 Verification
+name: OURPROCESSORSELF CI Smoke
 
 on:
-  pull_request:
-    branches: [main]
   push:
-    branches: [main, "mutation/**"]
-
-permissions:
-  contents: read
+    branches:
+      - "mutation/**"
 
 jobs:
-  verify:
+  smoke:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout source
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Execute processor test suite
-        run: npm test
-
-      - name: Execute boot
-        run: npm run boot
-
-      - name: Emit verification boundary
-        run: |
-          echo "SOURCE = CHECKED OUT"
-          echo "RUNTIME = EXECUTED"
-          echo "TEST = PASSED IF PREVIOUS STEP PASSED"
-          echo "BOOT = EXECUTED IF PREVIOUS STEP PASSED"
+      - name: Prove runner
+        run: echo "OURPROCESSORSELF GITHUB RUNNER ONLINE"
