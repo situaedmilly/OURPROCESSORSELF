@@ -29,7 +29,7 @@ export function proposeTransition({machine, from, to, operation, authorized=fals
   return Object.freeze({...proposal, proposalHash: hash(proposal)});
 }
 
-export function executeTransition({machine, proposal, targetCommit}={}) {
+export function executeTransition({machine, proposal, targetCommit, causalBinding=null}={}) {
   if (proposal?.admission !== "ADMITTED") throw new Error("transition is not admitted");
   if (!targetCommit) throw new TypeError("targetCommit is required");
   const previous = machine.surfaces[proposal.from];
@@ -40,13 +40,14 @@ export function executeTransition({machine, proposal, targetCommit}={}) {
     status: "TRANSITIONED",
   });
   const receiptBody = {
-    schema: "OURSELF.GITHUBCOMPUTERMORPH.TRANSITION_RECEIPT.v0.1",
+    schema: "OURSELF.GITHUBCOMPUTERMORPH.TRANSITION_RECEIPT.v0.2",
     proposalHash: proposal.proposalHash,
     from: proposal.from,
     to: proposal.to,
     operation: proposal.operation,
     preCommit: previous.commit,
     postCommit: targetCommit,
+    causalBinding,
   };
   return Object.freeze({
     state: next,

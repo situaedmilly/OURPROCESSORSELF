@@ -63,13 +63,26 @@ export function executeCausalLineage({
   const executionReceipts = processor.run();
   const processorEvidence = processor.sealEvidence();
 
+  const finalProcessorReceiptHash = executionReceipts.at(-1)?.receiptHash ?? null;
+  const receiptId = id("receipt", finalProcessorReceiptHash);
+  const causalBinding = Object.freeze({
+    messageId: message.messageId,
+    proposalId,
+    admissionId,
+    instanceId: resolvedInstanceId,
+    executionId,
+    evidenceHash: processorEvidence.evidenceHash,
+    processorReceiptId: receiptId,
+    processorFinalReceiptHash: finalProcessorReceiptHash,
+  });
+
   const transition = executeTransition({
     machine,
     proposal,
     targetCommit,
+    causalBinding,
   });
   const transitionId = id("transition", transition.receipt.receiptHash);
-  const receiptId = id("receipt", processorEvidence.evidenceHash);
   const stateId = id("state", {
     surface: transition.state.surface,
     commit: transition.state.commit,
@@ -95,6 +108,7 @@ export function executeCausalLineage({
     [CAUSAL_STAGE.TRANSITION]: Object.freeze({
       transitionId,
       receiptHash: transition.receipt.receiptHash,
+      causalBindingHash: sha256(transition.receipt.causalBinding),
       preCommit: transition.receipt.preCommit,
       postCommit: transition.receipt.postCommit,
     }),
@@ -110,6 +124,7 @@ export function executeCausalLineage({
     }),
     [CAUSAL_STAGE.EVIDENCE]: Object.freeze({
       evidenceHash: processorEvidence.evidenceHash,
+      processorReceiptId: receiptId,
       receiptHashes: processorEvidence.receiptHashes,
     }),
     [CAUSAL_STAGE.STATE]: Object.freeze({
