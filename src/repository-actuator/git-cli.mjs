@@ -9,7 +9,7 @@ export function createGitCliAdapter({cwd}={}) {
       const {stdout} = await execFileAsync("git", ["rev-parse", ref], {cwd});
       return {ref, commit: stdout.trim()};
     },
-    async updateRef(ref, expectedCommit, newCommit) {
+    async updateRef(ref, newCommit, expectedCommit) {
       const args = ["update-ref", ref, newCommit, expectedCommit];
       const {stdout, stderr} = await execFileAsync("git", args, {cwd});
       return {ref, expectedCommit, newCommit, stdout: stdout.trim(), stderr: stderr.trim()};
