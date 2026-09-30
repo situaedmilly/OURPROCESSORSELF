@@ -1,7 +1,17 @@
 # OURPROCESSORSELF BOOT
-Status: repository substrate bootstrapped.
+Status: v0.2 processor/control-plane expansion.
 
-ECOSYSTEM FETCH → NORMALIZE → ADMIT → SUPERBIN/IR → ISA → MACHINE WORDS → PROCESSOR → STATE → RECEIPT
+WORLD → EVENT → FETCH → NORMALIZE → CLASSIFY → SEMANTIC OBJECT → POLICY → ADMISSION → SUPERBIN/IR → ISA → MACHINE WORDS → PROCESSOR → STATE/EFFECT → OBSERVATION → RECEIPT → EVIDENCE
+
+## Constitutional boundaries
+
+- EVENT != AUTHORITY
+- GIT != RUNTIME
+- AGENT != ACTUATOR
+- RECEIPT != EFFECT
+- OBSERVATION != ADMISSION
+
+## Processor
 
 - ISA: OURSELF-ISA/0.1
 - Word: 4 bytes
@@ -12,7 +22,17 @@ ECOSYSTEM FETCH → NORMALIZE → ADMIT → SUPERBIN/IR → ISA → MACHINE WORD
 - GitHub Actions: intentionally absent
 - Host/device authority: none
 
+## Instance
+
+Every admitted transition receives an addressable execution instance with event, proposal, policy version, processor version, program hash, pre-state commitment, capability commitment and execution bounds.
+
+## Admission
+
+Admission permits entry into execution. It does not guarantee effect.
+
+Execution may terminate as EXECUTED, TRAPPED, FAILED, BOUNDED or ROLLED_BACK.
+
 Boot vector: R0=7, R1=5, R2=R0+R1, MEM[0x10]=R2, HALT.
 Expected: R2=12 and MEM[0x10]=12.
 
-Machine validity ≠ OURSELF authority.
+Machine validity != OURSELF authority.
