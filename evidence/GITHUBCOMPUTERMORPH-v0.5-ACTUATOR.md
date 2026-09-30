@@ -2,6 +2,8 @@
 
 Status: IMPLEMENTED ON BRANCH `mutation/github-computermorph-v0.5-actuator`.
 
+Runtime witness: local reconstruction of the exact actuator dependency set — 4 tests passed, 0 failed. GitHub Actions was not used.
+
 Scope:
 - One physical operation: UPDATE_REF.
 - Admission is separate from actuation.
