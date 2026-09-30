@@ -25,15 +25,15 @@ export function admitUpdateRef({machine, transition, authorized=false, bounded=f
   }
   if (!authorized) return Object.freeze({status: "REJECTED", reason: "UNAUTHORIZED"});
   if (!bounded) return Object.freeze({status: "REJECTED", reason: "UNBOUNDED"});
-  if (machine.surfaces[from].commit !== preCommit) {
+  if (machine.surfaces[targetSurface].commit !== preCommit) {
     return Object.freeze({status: "REJECTED", reason: "MACHINE_PRESTATE_MISMATCH"});
   }
   const plan = {
     schema: REPOSITORY_ACTUATOR_SCHEMA,
     operation: ACTUATOR_OPERATION.UPDATE_REF,
     targetSurface,
-    preRef: machine.surfaces[from].ref,
-    preCommit,
+    preRef: machine.surfaces[targetSurface].ref,
+    preCommit: machine.surfaces[targetSurface].commit,
     requestedPostCommit: postCommit,
     transitionReceiptHash: transition.receipt.receiptHash,
     causalBinding: transition.receipt.causalBinding,
