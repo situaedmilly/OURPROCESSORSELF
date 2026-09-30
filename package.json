@@ -3,10 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "boot": "node src/boot.mjs",
     "mcp": "node mcp/server.mjs",
-    "test": "node --test test/processor.test.mjs test/mcp.test.mjs"
+    "test": "node --test test/processor.test.mjs test/repository-machine.test.mjs"
   }
 }
