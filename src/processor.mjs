@@ -44,7 +44,7 @@ export class OurselfProcessor {
   return receipt;
  }
  sealEvidence({previousEvidenceHash=null}={}){
-  return sealExecutionEvidence({isa:ISA,program:this.program,preState:this.receiptChain[0]?.preStateHash??sha256(this.snapshot()),receipts:this.receiptChain,postState:this.snapshot(),previousEvidenceHash});
+  return sealExecutionEvidence({isa:ISA,program:this.program,preStateHash:this.receiptChain[0]?.preStateHash??sha256(this.snapshot()),receipts:this.receiptChain,postStateHash:this.receiptChain.at(-1)?.postStateHash??sha256(this.snapshot()),previousEvidenceHash});
  }
  assertRegister(i){if(!Number.isInteger(i)||i<0||i>=ISA.registers)throw new ProcessorTrap("REGISTER_BOUNDS","register out of bounds");}
  assertRegisters(...i){i.forEach(x=>this.assertRegister(x));}
