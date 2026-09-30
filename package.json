@@ -1,0 +1,4 @@
+{
+  "name":"ourprocessorself","version":"0.1.0","private":true,"type":"module",
+  "engines":{"node":">=22"},"scripts":{"boot":"node src/boot.mjs","test":"node test/processor.test.mjs"}
+}
