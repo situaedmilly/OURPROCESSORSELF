@@ -1,9 +1,16 @@
-import {ISA,OPCODE} from "./isa.mjs";
-export class ProcessorTrap extends Error{constructor(code,message){super(message);this.name="ProcessorTrap";this.code=code;}}
-export class OurselfProcessor{
+import { ISA, OPCODE } from "./isa.mjs";
+import { sha256 } from "./evidence/hash.mjs";
+import { sealExecutionEvidence } from "./evidence/seal.mjs";
+
+export class ProcessorTrap extends Error {
+ constructor(code,message){super(message);this.name="ProcessorTrap";this.code=code;}
+}
+
+export class OurselfProcessor {
  constructor({program=new Uint8Array(),memoryBytes=ISA.memoryBytes}={}){
   this.state={pc:0,registers:new Uint32Array(ISA.registers),flags:{zero:false},memory:new Uint8Array(memoryBytes),halted:false,trapped:false,cycles:0};
   this.program=program instanceof Uint8Array?program:Uint8Array.from(program);
+  this.receiptChain=[];
  }
  fetch(){const p=this.state.pc;if(p+ISA.wordBytes>this.program.length)throw new ProcessorTrap("FETCH_BOUNDS","program fetch out of bounds");return this.program.slice(p,p+ISA.wordBytes);}
  step(){
@@ -26,7 +33,19 @@ export class OurselfProcessor{
  }
  run({maxCycles=1000}={}){const receipts=[];while(!this.state.halted&&!this.state.trapped){if(this.state.cycles>=maxCycles)throw new ProcessorTrap("EXECUTION_BOUND","cycle bound exceeded");receipts.push(this.step());}return receipts;}
  snapshot(){return {pc:this.state.pc,registers:[...this.state.registers],zero:this.state.flags.zero,memory:[...this.state.memory],halted:this.state.halted,trapped:this.state.trapped,cycles:this.state.cycles};}
- receipt(status,before=null,after=this.snapshot(),instruction=null){return Object.freeze({schema:"OURSELF.PROCESSOR.EXECUTION_RECEIPT.v0.1",status,instruction,preState:before,postState:after});}
+ receipt(status,before=null,after=this.snapshot(),instruction=null){
+  const sequence=this.receiptChain.length;
+  const preStateHash=sha256(before);
+  const postStateHash=sha256(after);
+  const previousReceiptHash=this.receiptChain.at(-1)?.receiptHash??null;
+  const body={schema:"OURSELF.PROCESSOR.EXECUTION_RECEIPT.v0.2",sequence,status,instruction,preStateHash,postStateHash,previousReceiptHash};
+  const receipt=Object.freeze({...body,receiptHash:sha256(body)});
+  this.receiptChain.push(receipt);
+  return receipt;
+ }
+ sealEvidence({previousEvidenceHash=null}={}){
+  return sealExecutionEvidence({isa:ISA,program:this.program,preState:this.receiptChain[0]?.preStateHash??sha256(this.snapshot()),receipts:this.receiptChain,postState:this.snapshot(),previousEvidenceHash});
+ }
  assertRegister(i){if(!Number.isInteger(i)||i<0||i>=ISA.registers)throw new ProcessorTrap("REGISTER_BOUNDS","register out of bounds");}
  assertRegisters(...i){i.forEach(x=>this.assertRegister(x));}
  assertMemory(a){if(!Number.isInteger(a)||a<0||a>=this.state.memory.length)throw new ProcessorTrap("MEMORY_BOUNDS","memory out of bounds");}
