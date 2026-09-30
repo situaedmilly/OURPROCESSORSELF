@@ -40,13 +40,14 @@ export function executeTransition({machine, proposal, targetCommit, causalBindin
     status: "TRANSITIONED",
   });
   const receiptBody = {
-    schema: "OURSELF.GITHUBCOMPUTERMORPH.TRANSITION_RECEIPT.v0.1",
+    schema: "OURSELF.GITHUBCOMPUTERMORPH.TRANSITION_RECEIPT.v0.2",
     proposalHash: proposal.proposalHash,
     from: proposal.from,
     to: proposal.to,
     operation: proposal.operation,
     preCommit: previous.commit,
     postCommit: targetCommit,
+    causalBinding,
   };
   return Object.freeze({
     state: next,
