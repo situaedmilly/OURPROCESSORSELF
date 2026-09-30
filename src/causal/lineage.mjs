@@ -148,3 +148,33 @@ export function executeCausalLineage({
     lineage,
   });
 }
+
+export async function continueCausalLineageWithActuation({lineageResult, machine, adapter, authorized=false, bounded=false}={}) {
+  if (lineageResult?.status !== "WITNESSED") throw new Error("witnessed causal lineage is required");
+  const transitionReceipt = lineageResult.transition?.receipt;
+  if (!transitionReceipt) throw new Error("transition receipt is required");
+  const {createActuationRequest} = await import("../../contracts/actuation.mjs");
+  const {evaluateActuatorAdmission, executeActuation} = await import("./actuation.mjs");
+  const request = createActuationRequest({
+    transitionReceipt,
+    targetSurface: transitionReceipt.to,
+    expectedPreRef: lineageResult.transition.state.ref,
+    expectedPreCommit: transitionReceipt.preCommit,
+    requestedPostCommit: transitionReceipt.postCommit,
+  });
+  const admission = evaluateActuatorAdmission({
+    request,
+    machine,
+    transition: lineageResult.transition,
+    authorized,
+    bounded,
+  });
+  if (admission.status !== "ACTUATOR_ADMITTED") {
+    return Object.freeze({status:"ACTUATOR_REJECTED",lineage:lineageResult,actuationRequest:request,actuatorAdmission:admission});
+  }
+  const actuation = await executeActuation({actuatorAdmission:admission,adapter});
+  const continuation = actuation.status === "ACTUATOR_EXECUTED"
+    ? Object.freeze({stateId:actuation.actualState.stateId, surface:actuation.actualState.surface, ref:actuation.actualState.ref, commit:actuation.actualState.commit})
+    : null;
+  return Object.freeze({status:actuation.status,lineage:lineageResult,actuationRequest:request,actuatorAdmission:admission,actuation,actualRepositoryState:continuation});
+}
