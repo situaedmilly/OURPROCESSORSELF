@@ -75,3 +75,28 @@ test("pre-state mismatch fails without mutation", async () => {
     assert.equal((await git(f.cwd, "rev-parse", "refs/heads/cpu")).stdout.trim(), f.c1);
   } finally { await rm(f.cwd, {recursive:true, force:true}); }
 });
+
+
+test("mutation acknowledgement without state change yields ACTUATOR_FAILED", async () => {
+  const f = await fixture();
+  try {
+    const machine = bootstrapMachineState(f.c1);
+    const proposal = proposeTransition({machine, from:"input", to:"cpu", operation:"UPDATE_REF", authorized:true, bounded:true, metadata:{messageId:"MSG-ACT-003"}});
+    const transition = executeTransition({machine, proposal, targetCommit:f.c2, causalBinding:{messageId:"MSG-ACT-003", proposalId:"proposal_x", admissionId:"admission_x", instanceId:"instance_x", executionId:"execution_x", evidenceHash:"e".repeat(64), processorReceiptId:"receipt_x", processorFinalReceiptHash:"f".repeat(64)}});
+    const admission = admitUpdateRef({machine, transition, authorized:true, bounded:true});
+    assert.equal(admission.status, "ACTUATOR_ADMITTED");
+    const result = await executeUpdateRef({
+      admission,
+      adapter: {
+        async readRef(ref) { return {ref, commit:f.c1}; },
+        async updateRef() { return {acknowledged:true, mutated:false}; },
+      },
+    });
+    assert.equal(result.status, "ACTUATOR_FAILED");
+    assert.equal(result.requestedPostCommit, f.c2);
+    assert.equal(result.actualPostCommit, f.c1);
+    assert.equal(result.refMutation, false);
+    assert.equal(result.readback.verified, false);
+    assert.match(result.receiptHash, /^[0-9a-f]{64}$/);
+  } finally { await rm(f.cwd, {recursive:true, force:true}); }
+});
