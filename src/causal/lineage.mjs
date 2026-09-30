@@ -149,7 +149,7 @@ export function executeCausalLineage({
   });
 }
 
-export async function continueCausalLineageWithActuation({lineageResult, adapter, authorized=false, bounded=false}={}) {
+export async function continueCausalLineageWithActuation({lineageResult, machine, adapter, authorized=false, bounded=false}={}) {
   if (lineageResult?.status !== "WITNESSED") throw new Error("witnessed causal lineage is required");
   const transitionReceipt = lineageResult.transition?.receipt;
   if (!transitionReceipt) throw new Error("transition receipt is required");
@@ -164,7 +164,7 @@ export async function continueCausalLineageWithActuation({lineageResult, adapter
   });
   const admission = evaluateActuatorAdmission({
     request,
-    machine: lineageResult._machine ?? null,
+    machine,
     transition: lineageResult.transition,
     authorized,
     bounded,
