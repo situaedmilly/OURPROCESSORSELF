@@ -1,0 +1,13 @@
+name: Actions Admission Probe
+
+on:
+  push:
+    branches:
+      - ci-admission-probe-main
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Emit runner proof
+        run: echo ACTIONS_ADMISSION_PROBE_OK
