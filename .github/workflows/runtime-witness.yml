@@ -1,0 +1,19 @@
+name: OURPROCESSORSELF Runtime Witness
+
+on:
+  push:
+    branches:
+      - "mutation/verified-continuation-v0.7"
+
+jobs:
+  runtime-witness:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Runtime witness
+        run: npm test
