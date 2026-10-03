@@ -13,27 +13,20 @@ export async function runVerifiedContinuation({
   stopConditions = [],
   escalationConditions = [],
   causalParent = null,
+  admitProposal,
   executeProposal,
   maxCycles = 8,
 } = {}) {
+  if (typeof admitProposal !== "function") throw new TypeError("admitProposal is required");
   if (typeof executeProposal !== "function") throw new TypeError("executeProposal is required");
   if (!Number.isInteger(maxCycles) || maxCycles < 1) throw new RangeError("maxCycles must be >= 1");
 
-  let graph = createSelfGraph({
-    observedState,
-    desiredState,
-    authorityContext,
-    capabilityContext,
-    causalParent,
-  });
+  let graph = createSelfGraph({observedState, desiredState, authorityContext, capabilityContext, causalParent});
   const cycles = [];
 
   for (let cycle = 1; cycle <= maxCycles; cycle += 1) {
     const differentiated = differentiateSelfGraph(graph, {
-      invariants,
-      stopConditions,
-      escalationConditions,
-      causalParent,
+      invariants, stopConditions, escalationConditions, causalParent,
     });
     const proposal = generateNextProposal(differentiated.delta, {mutation});
 
@@ -42,9 +35,7 @@ export async function runVerifiedContinuation({
         schema: VERIFIED_CONTINUATION_SCHEMA,
         status: "DESIRED_STATE_REALIZED",
         cycles: Object.freeze(cycles),
-        graph,
-        delta: differentiated.delta,
-        proposal,
+        graph, delta: differentiated.delta, proposal,
       });
     }
 
@@ -54,17 +45,26 @@ export async function runVerifiedContinuation({
         status: "BOUNDARY_UPRISE",
         reason: proposal.reason,
         cycles: Object.freeze(cycles),
-        graph,
-        delta: differentiated.delta,
-        proposal,
+        graph, delta: differentiated.delta, proposal,
+      });
+    }
+
+    const admission = await admitProposal(Object.freeze({
+      proposal, delta: differentiated.delta, graph, cycle,
+    }));
+
+    if (admission?.status !== "ADMITTED") {
+      return Object.freeze({
+        schema: VERIFIED_CONTINUATION_SCHEMA,
+        status: "BOUNDARY_UPRISE",
+        reason: admission?.reason ?? "PROPOSAL_REJECTED",
+        cycles: Object.freeze([...cycles, Object.freeze({cycle, proposal, admission})]),
+        graph, delta: differentiated.delta, proposal, admission,
       });
     }
 
     const execution = await executeProposal(Object.freeze({
-      proposal,
-      delta: differentiated.delta,
-      graph,
-      cycle,
+      proposal, admission, delta: differentiated.delta, graph, cycle,
     }));
 
     if (execution?.status !== "ACTUATION_EXECUTED") {
@@ -72,10 +72,8 @@ export async function runVerifiedContinuation({
         schema: VERIFIED_CONTINUATION_SCHEMA,
         status: "BOUNDARY_UPRISE",
         reason: execution?.reason ?? "ACTUATION_FAILED",
-        cycles: Object.freeze([...cycles, Object.freeze({cycle, proposal, execution})]),
-        graph,
-        delta: differentiated.delta,
-        proposal,
+        cycles: Object.freeze([...cycles, Object.freeze({cycle, proposal, admission, execution})]),
+        graph, delta: differentiated.delta, proposal, admission,
       });
     }
 
@@ -92,6 +90,7 @@ export async function runVerifiedContinuation({
     cycles.push(Object.freeze({
       cycle,
       proposal,
+      admission,
       execution: Object.freeze({
         status: execution.status,
         actualState: execution.actualState,
