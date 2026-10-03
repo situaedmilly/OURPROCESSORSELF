@@ -15,7 +15,7 @@ export function admitUpdateRef({machine, transition, authorized=false, bounded=f
   if (!transition?.receipt || transition.receipt.schema !== "OURSELF.GITHUBCOMPUTERMORPH.TRANSITION_RECEIPT.v0.2") {
     return Object.freeze({status: "REJECTED", reason: "INVALID_TRANSITION_RECEIPT"});
   }
-  const {from, to, operation, preCommit, postCommit} = transition.receipt;
+  const {to, operation, preCommit, postCommit} = transition.receipt;
   const targetSurface = to;
   if (!machine?.surfaces?.[targetSurface] || !Object.hasOwn(SURFACE_ROLE, targetSurface)) {
     return Object.freeze({status: "REJECTED", reason: "UNDECLARED_TARGET_SURFACE"});
@@ -63,7 +63,7 @@ export async function executeUpdateRef({admission, adapter}={}) {
 
   let mutationResult;
   try {
-    mutationResult = await adapter.updateRef(plan.preRef, plan.requestedPostCommit);
+    mutationResult = await adapter.updateRef(plan.preRef, plan.requestedPostCommit, plan.preCommit);
   } catch (error) {
     return sealFailure({plan, observedPre, reason: "REF_MUTATION_FAILED", error: String(error?.message ?? error)});
   }
@@ -101,8 +101,7 @@ function sealFailure({plan, observedPre, reason, error=null}) {
     status: ACTUATOR_STATUS.FAILED,
     operation: plan.operation,
     targetSurface: plan.targetSurface,
-    preRef: plan.preRef,
-    preCommit: observedPre?.commit ?? null,
+    preRef: observedPre?.commit ?? null,
     requestedPostCommit: plan.requestedPostCommit,
     actualPostCommit: observedPre?.commit ?? null,
     refMutation: false,
