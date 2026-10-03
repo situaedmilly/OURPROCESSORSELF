@@ -28,7 +28,9 @@ async function fixture() {
   await git(cwd, "add", "state.txt");
   await git(cwd, "commit", "-q", "-m", "C2");
   const c2 = (await git(cwd, "rev-parse", "HEAD")).stdout.trim();
-  await git(cwd, "branch", "cpu", c1);\n  await git(cwd, "update-ref", "refs/heads/cpu", c1);\n  return {cwd, c1, c2};
+  await git(cwd, "branch", "cpu", c1);
+  await git(cwd, "update-ref", "refs/heads/cpu", c1);
+  return {cwd, c1, c2};
 }
 
 test("actuator rejects unauthorized UPDATE_REF before mutation", async () => {
@@ -75,7 +77,6 @@ test("pre-state mismatch fails without mutation", async () => {
     assert.equal((await git(f.cwd, "rev-parse", "refs/heads/cpu")).stdout.trim(), f.c1);
   } finally { await rm(f.cwd, {recursive:true, force:true}); }
 });
-
 
 test("mutation acknowledgement without state change yields ACTUATOR_FAILED", async () => {
   const f = await fixture();
