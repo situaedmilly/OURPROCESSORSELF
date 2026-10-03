@@ -9,6 +9,6 @@
   "scripts": {
     "boot": "node src/boot.mjs",
     "mcp": "node mcp/server.mjs",
-    "test": "node --test test/processor.test.mjs test/repository-machine.test.mjs test/repository-machine.pressure.test.mjs test/causal-lineage.test.mjs test/repository-actuator.test.mjs test/causal-actuation.test.mjs"
+    "test": "node --test test/processor.test.mjs test/repository-machine.test.mjs test/repository-machine.pressure.test.mjs test/causal-lineage.test.mjs test/repository-actuator.test.mjs test/causal-actuation.test.mjs test/verified-continuation.test.mjs"
   }
 }
