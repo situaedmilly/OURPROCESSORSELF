@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SELFgateway v0.1 execution contract",
+  "type": "object",
+  "required": ["schema","gateway","network","authority","execution"],
+  "properties": {
+    "schema": {"const":"SELFgateway/v0.1"},
+    "gateway": {"type":"object","required":["model_name","model_number","firmware_version"]},
+    "network": {"type":"object","required":["wan_address","address_family","nat_state","inbound_reachability"]},
+    "authority": {"type":"object","required":["status"],"properties":{"status":{"type":"string"}}},
+    "execution": {"type":"object","required":["mode","external_effect"],"properties":{"mode":{"const":"LOCAL_ALCHEMY"},"external_effect":{"type":"boolean"}}}
+  }
+}
