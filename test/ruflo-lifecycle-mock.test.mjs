@@ -149,5 +149,6 @@ test("receipts form a deterministic hash chain", () => {
   assert.equal(two.receipt.sequence, 1);
   assert.equal(two.receipt.previousReceiptHash, one.receipt.receiptHash);
   assert.match(two.receipt.receiptHash, /^[0-9a-f]{64}$/);
-  assert.equal(sha256({ ...two.receipt, receiptHash: undefined }).length, 64);
+  const { receiptHash, ...receiptBody } = two.receipt;
+  assert.equal(receiptHash, sha256(receiptBody));
 });
