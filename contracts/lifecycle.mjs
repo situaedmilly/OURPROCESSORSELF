@@ -75,7 +75,7 @@ export function createLifecycleRequest(input = {}) {
     hostIdentityId: requiredText(input.hostIdentityId, "hostIdentityId"),
     requesterIdentity: requiredText(input.requesterIdentity, "requesterIdentity"),
     capability,
-    processInstanceId: input.processInstanceId ?? null,
+    processInstanceId: input.processInstanceId == null ? null : requiredText(input.processInstanceId, "processInstanceId"),
     scope: Object.freeze({
       hostIdentityId: requiredText(input.hostIdentityId, "hostIdentityId"),
       agentId: requiredText(input.agentId, "agentId"),
