@@ -190,6 +190,7 @@ export class DeterministicMockLifecycleAdapter {
     if (request.schema !== "OURSELF.LIFECYCLE.REQUEST.v0.1") return "REQUEST_SCHEMA_INVALID";
     if (request.payloadDigest !== sha256(lifecycleRequestDigestPayload(request))) return "REQUEST_DIGEST_MISMATCH";
     if (request.hostIdentityId !== this.hostIdentityId) return "HOST_SCOPE_MISMATCH";
+    if (request.scope?.hostIdentityId !== request.hostIdentityId || request.scope?.agentId !== request.agentId || request.scope?.realizationId !== request.realizationId) return "REQUEST_SCOPE_BINDING_MISMATCH";
     if (request.capability !== requiredCapability(request.operation)) return "CAPABILITY_OPERATION_MISMATCH";
 
     const issuedAt = Date.parse(request.issuedAt);
@@ -220,7 +221,7 @@ export class DeterministicMockLifecycleAdapter {
     const admissionExpiry = Date.parse(admission.expiresAt);
     const admissionIssued = Date.parse(admission.issuedAt);
     if (!Number.isFinite(admissionExpiry) || !Number.isFinite(admissionIssued)) return "ADMISSION_TIME_INVALID";
-    if (admissionIssued > nowMs || admissionExpiry <= nowMs) return "ADMISSION_EXPIRED";
+    if (admissionIssued > nowMs || admissionExpiry <= nowMs || admissionIssued > issuedAt || admissionExpiry < expiresAt) return "ADMISSION_EXPIRED";
 
     let verified = false;
     try {
