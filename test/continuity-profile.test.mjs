@@ -165,3 +165,10 @@ test("missing envelope binding fails structural validation", () => {
   assert.equal(result.valid, false);
   assert.ok(result.errors.includes("ENVELOPE_BINDING_REQUIRED"));
 });
+
+test("unknown recovery lifecycle state fails structural validation", () => {
+  const recovery = { ...profile().recovery, status: "MAGICALLY_RESTORED" };
+  const result = validateContinuityProfile(profile({ recovery }));
+  assert.equal(result.valid, false);
+  assert.ok(result.errors.includes("INVALID_RECOVERY_STATUS"));
+});
