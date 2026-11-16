@@ -45,6 +45,9 @@ export async function resolveContinuityEvidence(profile, adapter) {
       errors.push(`ENVELOPE_PAYLOAD_DECLARATION_MISMATCH:${component.component_id}`);
     }
     if (envelope.lifecycle !== binding.lifecycle) errors.push(`ENVELOPE_LIFECYCLE_MISMATCH:${component.component_id}`);
+    if (envelope.lifecycle !== "INTEGRITY_VERIFIED" || envelope.verification?.integrity !== "MATCH") {
+      errors.push(`ENVELOPE_NOT_INTEGRITY_VERIFIED:${component.component_id}`);
+    }
 
     let bytes;
     try { bytes = await adapter.readPayload(envelope); }
