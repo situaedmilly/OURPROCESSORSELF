@@ -83,3 +83,14 @@ The validator emits explicit blockers for unresolved envelope and transition ref
 - Verify independent custody and later recontact/witness evidence.
 
 Until those adapters and independent evidence exist, no processor result may claim restoration readiness or recovery.
+
+## Read-only resolution and transition verification
+
+The continuity branch now includes two additional pure verification modules:
+
+- `src/continuity/resolver.mjs` accepts an injected read-only DATASELF adapter. It resolves canonical envelope IDs, compares envelope/object/reality/instance identities and payload declarations, reads exact payload bytes, recomputes SHA-256 and byte count, requires DATASELF lifecycle `INTEGRITY_VERIFIED` with verification integrity `MATCH`, and resolves each referenced transition event against the same object and envelope.
+- `src/continuity/transition-journal.mjs` verifies a complete supplied journal beginning at sequence zero, deterministic event digests, predecessor hash continuity, unique event IDs, nonce non-replay across transitions, immutable transition target/preimage bindings, lifecycle phase order, result sequence, content-address binding, and required observation/recontact evidence.
+
+These functions do not create an admitted storage adapter. A fake or test adapter proves only verifier behavior. The journal verifier cannot prove that an external journal is complete or immutable unless its source is independently trusted. Authority/admission references, independent custody, compatibility and independent witnessing remain separate gates.
+
+The processor package test command now includes profile, resolver, and transition-journal regression files. GitHub Actions workflows were added to the processor and DATASELF source branches to run the complete `npm test` command and compile the DATASELF envelope, transition and continuity schemas against Draft 2020-12. Their run results remain unconfirmed until GitHub reports actual completed runs.
