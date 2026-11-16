@@ -93,7 +93,15 @@
       "WASM",
       "CLOUD_RUNTIME",
       "HYPERVISOR_GUEST",
-      "IN_MEMORY"
+      "IN_MEMORY",
+      "BUBBLE",
+      "CLOUDFLARE_WORKER",
+      "EDGE_RUNTIME",
+      "SUPABASE",
+      "NODE",
+      "PYTHON",
+      "RUST",
+      "MACOS_APP"
     ]
   }
 }
