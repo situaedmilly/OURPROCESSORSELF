@@ -60,3 +60,10 @@ test("does not downgrade D2 requirement to D1",()=>{
   assert.equal(result.authorized_for_requirement,false);
   assert.ok(result.errors.some(x=>x.code==="DURABILITY_BELOW_REQUIRED"));
 });
+
+test("recognizes Bubble, Cloudflare edge, Supabase projection and language runtimes",()=>{
+  for(const runtime_kind of ["BUBBLE","CLOUDFLARE_WORKER","EDGE_RUNTIME","SUPABASE","NODE","PYTHON","RUST","MACOS_APP"]){
+    const value=registration({runtime:{runtime_id:"RUNTIME-"+runtime_kind,runtime_kind,runtime_instance_id:"INSTANCE-"+runtime_kind}});
+    assert.equal(validateStorageAdapterRegistration(value).valid,true,runtime_kind);
+  }
+});
