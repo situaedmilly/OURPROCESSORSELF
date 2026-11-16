@@ -12,6 +12,7 @@ const envelope = {
   reality_id: "OURSELF_RUNTIME",
   instance_id: "WINDOWS_ARM64_ORIGINAL",
   payload: { sha256: digest, byte_count: bytes.length, content_key: `sha256:${digest}` },
+  verification: { integrity: "MATCH" },
   lifecycle: "INTEGRITY_VERIFIED",
 };
 const event = {
