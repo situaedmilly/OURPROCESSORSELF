@@ -47,5 +47,24 @@
     "situaedmilly/SELFVEREIGN-ADDRESSELF",
     "situaedmilly/FLOWACTIONSELFWORK",
     "situaedmilly/Cognitive-Transmutation-Core"
-  ]
+  ],
+  "storage_reality": {
+    "authority": "OURDATASELFBASE",
+    "authority_repository": "situaedmilly/OURSELF-DATABASE-ESTATE",
+    "authority_branch": "architecture/runtime-symmetric-storage-v0.1",
+    "contract_path": "CONTRACTS/RUNTIME-SYMMETRIC-STORAGE-v1.md",
+    "adapter_registration_schema": "SCHEMAS/storage-adapter-registration.v1.schema.json",
+    "adapter_registry": "REGISTRY/runtime-storage-adapters.v1.json",
+    "constitutional_root_repository": "situaedmilly/OURSYSTEMSELFOPERATIN",
+    "constitutional_contract_path": "OURSELF/STORAGE/RUNTIME-SYMMETRY-CONSTITUTIONAL-CONTRACT-v0.1.md",
+    "processor_repository": "situaedmilly/OURPROCESSORSELF",
+    "processor_adapter_root": "src/storage/",
+    "workflow_repository": "situaedmilly/FLOWACTIONSELFWORK",
+    "workflow_path": "runtime/runtime-symmetric-storage/WORKFLOW.json",
+    "memory_repository": "situaedmilly/ALTONUMBUSELF",
+    "network_repository": "situaedmilly/ourself-cloud-server-network",
+    "wire_protocol_repository": "situaedmilly/self-protocol-suite",
+    "ecosystem_architecture_repository": "situaedmilly/ourself-core",
+    "status": "PROPOSED_CROSS_REPOSITORY_ARCHITECTURE_NOT_RUNTIME_ADMITTED"
+  }
 }
