@@ -24,6 +24,11 @@ export function validateStorageAdapterRegistration(registration) {
   if(!scope||typeof scope.reality_id!=="string"||!scope.reality_id)add("INVALID_REALITY_SCOPE","scope.reality_id");
   if(!scope||typeof scope.instance_id!=="string"||!scope.instance_id)add("INVALID_INSTANCE_SCOPE","scope.instance_id");
   if(!scope||typeof scope.namespace!=="string"||!scope.namespace)add("INVALID_NAMESPACE","scope.namespace");
+  const custody=registration.custody;
+  if(!custody||typeof custody.independent_custody!=="boolean")add("INVALID_CUSTODY_DECLARATION","custody.independent_custody");
+  if(!custody||typeof custody.control_domain_id!=="string"||!custody.control_domain_id)add("INVALID_CUSTODY_CONTROL_DOMAIN","custody.control_domain_id");
+  if(!custody||!Array.isArray(custody.independence_evidence_refs))add("INVALID_CUSTODY_EVIDENCE_REFS","custody.independence_evidence_refs");
+  if(!custody||!Array.isArray(custody.witness_evidence_refs))add("INVALID_WITNESS_EVIDENCE_REFS","custody.witness_evidence_refs");
   const caps=registration.capabilities;
   if(!caps||typeof caps!=="object")add("MISSING_CAPABILITY_PROFILE","capabilities");
   else for(const key of BOOL_CAPS)if(typeof caps[key]!=="boolean")add("INVALID_CAPABILITY_FLAG","capabilities."+key);
