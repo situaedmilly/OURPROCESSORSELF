@@ -11,6 +11,7 @@ function registration(overrides={}) {
     host:{host_id:"MAC-HOST-001",failure_domain_id:"INTERNAL-APFS-001",observed_at:"2026-11-16T23:00:00Z"},
     scope:{reality_id:"OURDATASELFBASE",instance_id:"OURSELF-INSTANCE-0001",namespace:"objects/sha256",allowed_object_classes:["EVIDENCE_ARTIFACT"],jurisdiction:"OURSELF"},
     capabilities:{immutable_publish:true,atomic_no_replace:true,exact_readback:true,digest_verify:true,file_flush:true,namespace_flush:true,snapshot:false,replication:false,retention_lock:false,encryption_at_rest:false,offline:true},
+    custody:{independent_custody:false,control_domain_id:"FOUNDER-CONTROLLED",independence_evidence_refs:[],witness_id:null,witness_control_domain_id:null,witness_evidence_refs:[]},
     durability:"D1_PROCESS_CRASH",
     admission:"CONFORMANCE_TESTED",
     evidence_refs:["FLOW-STORAGE-TEST-001"],
