@@ -64,3 +64,22 @@ The existing verified-continuation pattern remains authoritative for proposal/ad
 ## Next implementation gate
 
 Implement a pure, side-effect-free REVERSELF profile validator and deterministic tests against valid, missing-component, digest-mismatch, dependency-gap, and unauthorized-transition fixtures. Storage reads, QEMU operations, and restoration remain separate adapters and separately admitted effects.
+
+## Implemented structural boundary
+
+The v0.1 pure profile validator now checks the declared envelope binding fields, exact envelope-reference identity, digest/content-key consistency, byte-count shape, transition-reference shape, component identity uniqueness, dependency references, and required baseline roles.
+
+It deliberately returns `restore_gate.ready = false` for every input. It has no admitted envelope resolver, payload byte reader, transition-journal verifier, authority verifier, custody verifier, or independent witness. A declaration that a component is `ADMITTED` is not accepted as `INTEGRITY_VERIFIED`.
+
+The validator emits explicit blockers for unresolved envelope and transition references, unverified bytes, and unverified authority/custody. It is a structural guard, not a restoration authorization or recovery proof.
+
+## Remaining implementation gates
+
+- Resolve envelope IDs against canonical DATASELF objects and compare all bound identity fields.
+- Read exact payload bytes through an admitted, read-only storage adapter and recompute SHA-256 and byte count.
+- Verify the complete anchored transition journal against the v1 event contract.
+- Resolve authority/admission evidence for the exact restoration proposal and preimage.
+- Inventory every disk backing file, firmware/variable-store dependency, runtime binary, and dependency lock.
+- Verify independent custody and later recontact/witness evidence.
+
+Until those adapters and independent evidence exist, no processor result may claim restoration readiness or recovery.
