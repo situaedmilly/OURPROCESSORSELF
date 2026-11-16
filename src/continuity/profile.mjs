@@ -10,6 +10,7 @@ const ROLES = new Set([
   "OBSERVATION_EVIDENCE", "CUSTODY_EVIDENCE", "WITNESS_EVIDENCE",
 ]);
 const RESTORE_AUTHORITIES = new Set(["NOT_REQUESTED", "PENDING", "ADMITTED", "REJECTED"]);
+const RECOVERY_STATUSES = new Set(["DISCOVERY", "ACQUISITION", "PRESERVATION", "ADMISSION", "RESTORE_READY", "RESTORING", "OBSERVING", "RECONTACT", "WITNESSING", "RECOVERY_BLOCKED", "RECOVERED", "QUARANTINED"]);
 const REQUIRED_RESTORE_ROLES = [
   "VM_CONFIGURATION", "GUEST_DISK", "QEMU_RUNTIME", "PRESERVATION_COPY",
 ];
@@ -113,6 +114,7 @@ export function validateContinuityProfile(profile) {
     if (recovery.source_immutable !== true) errors.push("SOURCE_MUST_REMAIN_IMMUTABLE");
     if (!RESTORE_AUTHORITIES.has(recovery.restore_authority)) errors.push("INVALID_RESTORE_AUTHORITY");
     if (recovery.restore_authority !== "ADMITTED") blockers.push("RESTORE_AUTHORITY_NOT_ADMITTED");
+    if (!RECOVERY_STATUSES.has(recovery.status)) errors.push("INVALID_RECOVERY_STATUS");
     if (["RESTORE_READY", "RESTORING", "OBSERVING", "RECONTACT", "WITNESSING", "RECOVERED"].includes(recovery.status)) {
       blockers.push("UNVERIFIED_RECOVERY_STATUS_CLAIM");
     }
