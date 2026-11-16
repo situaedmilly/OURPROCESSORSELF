@@ -94,3 +94,9 @@ The continuity branch now includes two additional pure verification modules:
 These functions do not create an admitted storage adapter. A fake or test adapter proves only verifier behavior. The journal verifier cannot prove that an external journal is complete or immutable unless its source is independently trusted. Authority/admission references, independent custody, compatibility and independent witnessing remain separate gates.
 
 The processor package test command now includes profile, resolver, and transition-journal regression files. GitHub Actions workflows were added to the processor and DATASELF source branches to run the complete `npm test` command and compile the DATASELF envelope, transition and continuity schemas against Draft 2020-12. Their run results remain unconfirmed until GitHub reports actual completed runs.
+
+## Boot-launch configuration boundary
+
+`src/continuity/boot-launch-gate.mjs` configures a software-side, fail-closed authorization gate. It requires injected verifiers for payload resolution, byte integrity, journal lineage, source immutability, preservation copy, independent custody, operation-specific authority, runtime compatibility, and exact launch scope. Each verifier must return a positive result with a non-empty evidence reference.
+
+The gate does not start QEMU, open a VM bundle, write a disk, or perform a boot. It reports `BOOT_LAUNCH_AUTHORIZED` only when every independent verifier is supplied and succeeds; even then `effect_performed` remains false. A separate, explicitly admitted runtime actuator and observed boot receipt would be required for actual launch.
