@@ -28,6 +28,7 @@ async function ensureDirectoryNoSymlink(root, target) {
     }
     const stat = await lstat(current);
     if (!stat.isDirectory() || stat.isSymbolicLink()) throw new Error("STORE_PATH_COMPONENT_NOT_REAL_DIRECTORY");
+    if ((stat.mode & 0o022) !== 0) throw new Error("STORE_PATH_COMPONENT_GROUP_OR_WORLD_WRITABLE");
   }
 }
 
@@ -41,6 +42,7 @@ export async function createPosixFilesystemCas({ root, runtimeId, runtimeInstanc
   await mkdir(absoluteRoot, { recursive: true, mode: 0o700 });
   const rootStat = await lstat(absoluteRoot);
   if (!rootStat.isDirectory() || rootStat.isSymbolicLink()) throw new Error("STORE_ROOT_NOT_REAL_DIRECTORY");
+  if ((rootStat.mode & 0o022) !== 0) throw new Error("STORE_ROOT_GROUP_OR_WORLD_WRITABLE");
   const canonicalRoot = await realpath(absoluteRoot);
   const objectsRoot = path.join(canonicalRoot, "objects", "sha256");
   const stagingRoot = path.join(canonicalRoot, "staging");
@@ -63,7 +65,13 @@ export async function createPosixFilesystemCas({ root, runtimeId, runtimeInstanc
 
   async function get(contentKey) {
     const digest = parseKey(contentKey);
-    const bytes = await readFile(objectPath(digest));
+    const handle = await open(objectPath(digest), constants.O_RDONLY | constants.O_NOFOLLOW);
+    let bytes;
+    try {
+      const stat = await handle.stat();
+      if (!stat.isFile()) throw new Error("STORAGE_OBJECT_NOT_REGULAR_FILE");
+      bytes = await handle.readFile();
+    } finally { await handle.close(); }
     const actual = sha256(bytes);
     if (actual !== digest) throw new Error("STORAGE_INTEGRITY_MISMATCH");
     return bytes;
