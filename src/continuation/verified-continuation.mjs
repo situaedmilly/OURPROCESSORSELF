@@ -53,7 +53,7 @@ export async function runVerifiedContinuation({
       proposal, delta: differentiated.delta, graph, cycle,
     }));
 
-    if (admission?.status !== "ADMITTED") {
+    if (admission?.status !== "ACTUATOR_ADMITTED") {
       return Object.freeze({
         schema: VERIFIED_CONTINUATION_SCHEMA,
         status: "BOUNDARY_UPRISE",
