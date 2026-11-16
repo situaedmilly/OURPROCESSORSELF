@@ -157,3 +157,11 @@ test("quarantined payload blocks restoration", () => {
   assert.equal(result.valid, true);
   assert.ok(result.restore_gate.blockers.some((item) => item.startsWith("COMPONENT_QUARANTINED:")));
 });
+
+test("missing envelope binding fails structural validation", () => {
+  const components = profile().components;
+  delete components[0].envelope_binding;
+  const result = validateContinuityProfile(profile({ components }));
+  assert.equal(result.valid, false);
+  assert.ok(result.errors.includes("ENVELOPE_BINDING_REQUIRED"));
+});
