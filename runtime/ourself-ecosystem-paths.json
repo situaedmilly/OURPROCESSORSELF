@@ -65,6 +65,35 @@
     "network_repository": "situaedmilly/ourself-cloud-server-network",
     "wire_protocol_repository": "situaedmilly/self-protocol-suite",
     "ecosystem_architecture_repository": "situaedmilly/ourself-core",
-    "status": "PROPOSED_CROSS_REPOSITORY_ARCHITECTURE_NOT_RUNTIME_ADMITTED"
+    "status": "CONTRACTS_IMPLEMENTED_AND_MAC_ADAPTER_CONFORMANCE_TESTED_NOT_AUTHORITY_ADMITTED",
+    "runtime_consumers": [
+      "situaedmilly/ourself-agent-bridge-kernel",
+      "situaedmilly/ourself-agent-bridge",
+      "situaedmilly/Cognitive-Transmutation-Core",
+      "situaedmilly/self-communication",
+      "situaedmilly/ourself-cloud-server-network",
+      "situaedmilly/ALTONUMBUSELF",
+      "situaedmilly/self-protocol-suite",
+      "situaedmilly/ourself-core"
+    ],
+    "target_runtime_families": [
+      "MACOS",
+      "LINUX",
+      "RASPBERRY_PI",
+      "WINDOWS",
+      "WINDOWS_ARM64_GUEST",
+      "DOCKER",
+      "CONTAINERD",
+      "PODMAN",
+      "LIMA",
+      "COLIMA",
+      "ANDROID",
+      "IOS",
+      "BROWSER",
+      "WASM",
+      "CLOUD_RUNTIME",
+      "HYPERVISOR_GUEST",
+      "IN_MEMORY"
+    ]
   }
 }
