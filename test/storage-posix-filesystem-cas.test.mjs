@@ -98,7 +98,7 @@ test("rejects a group- or world-writable store root",async()=>{
   const root=path.join(parent,"store");
   await mkdir(root,{mode:0o700});
   const {chmod}=await import("node:fs/promises");
-  await chmod(root,0o755);
+  await chmod(root,0o777);
   await assert.rejects(createPosixFilesystemCas({root,runtimeId:"R",runtimeInstanceId:"I",hostId:"H",failureDomainId:"F"}),/STORE_ROOT_GROUP_OR_WORLD_WRITABLE/);
   await rm(parent,{recursive:true,force:true});
 });
