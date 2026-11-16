@@ -80,3 +80,25 @@ test("descriptor binds host and failure domain identities", async (t) => {
   assert.equal(descriptor.host_id, "TEST-HOST");
   assert.equal(descriptor.failure_domain_id, "TEST-DISK");
 });
+
+test("rejects a symlink at a content-addressed object path",async(t)=>{
+  const {root,adapter}=await fixture(t);
+  const bytes=Buffer.from("linked object");
+  const key=digest(bytes),hex=key.slice(7);
+  const directory=path.join(root,"objects","sha256",hex.slice(0,2),hex.slice(2,4));
+  await import("node:fs/promises").then(({mkdir})=>mkdir(directory,{recursive:true}));
+  const target=path.join(root,"outside");
+  await writeFile(target,bytes);
+  await symlink(target,path.join(directory,hex));
+  await assert.rejects(adapter.get(key));
+});
+
+test("rejects a group- or world-writable store root",async()=>{
+  const parent=await mkdtemp(path.join(tmpdir(),"ourself-storage-permission-"));
+  const root=path.join(parent,"store");
+  await mkdir(root,{mode:0o700});
+  const {chmod}=await import("node:fs/promises");
+  await chmod(root,0o755);
+  await assert.rejects(createPosixFilesystemCas({root,runtimeId:"R",runtimeInstanceId:"I",hostId:"H",failureDomainId:"F"}),/STORE_ROOT_GROUP_OR_WORLD_WRITABLE/);
+  await rm(parent,{recursive:true,force:true});
+});
