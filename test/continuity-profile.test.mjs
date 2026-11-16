@@ -172,3 +172,10 @@ test("unknown recovery lifecycle state fails structural validation", () => {
   assert.equal(result.valid, false);
   assert.ok(result.errors.includes("INVALID_RECOVERY_STATUS"));
 });
+
+test("firmware and dependency artifacts are mandatory for boot readiness", () => {
+  const result = validateContinuityProfile(profile());
+  assert.ok(result.restore_gate.blockers.includes("REQUIRED_COMPONENT_ABSENT:FIRMWARE_CODE"));
+  assert.ok(result.restore_gate.blockers.includes("REQUIRED_COMPONENT_ABSENT:FIRMWARE_VARIABLES"));
+  assert.ok(result.restore_gate.blockers.includes("REQUIRED_COMPONENT_ABSENT:DEPENDENCY_LOCK"));
+});
