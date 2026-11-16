@@ -67,6 +67,7 @@ export function validateContinuityProfile(profile) {
 
       const binding = component.envelope_binding;
       if (!isRecord(binding)) {
+        errors.push("ENVELOPE_BINDING_REQUIRED");
         blockers.push(`ENVELOPE_BINDING_ABSENT:${id ?? "UNKNOWN"}`);
       } else {
         if (typeof binding.envelope_id !== "string" || !binding.envelope_id.trim()) errors.push("INVALID_BOUND_ENVELOPE_ID");
