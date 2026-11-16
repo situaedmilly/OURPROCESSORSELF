@@ -9,8 +9,8 @@
   "scripts": {
     "boot": "node src/boot.mjs",
     "mcp": "node mcp/server.mjs",
-    "test": "node --test test/processor.test.mjs test/repository-machine.test.mjs test/repository-machine.pressure.test.mjs test/causal-lineage.test.mjs test/repository-actuator.test.mjs test/causal-actuation.test.mjs test/verified-continuation.test.mjs test/verified-continuation.runtime.test.mjs test/continuity-profile.test.mjs test/continuity-resolver.test.mjs test/continuity-transition-journal.test.mjs test/continuity-boot-launch-gate.test.mjs test/storage-posix-filesystem-cas.test.mjs",
+    "test": "node --test test/processor.test.mjs test/repository-machine.test.mjs test/repository-machine.pressure.test.mjs test/causal-lineage.test.mjs test/repository-actuator.test.mjs test/causal-actuation.test.mjs test/verified-continuation.test.mjs test/verified-continuation.runtime.test.mjs test/continuity-profile.test.mjs test/continuity-resolver.test.mjs test/continuity-transition-journal.test.mjs test/continuity-boot-launch-gate.test.mjs test/storage-posix-filesystem-cas.test.mjs test/storage-registration.test.mjs",
     "test:continuity": "node --test test/continuity-profile.test.mjs test/continuity-resolver.test.mjs test/continuity-transition-journal.test.mjs test/continuity-boot-launch-gate.test.mjs",
-    "test:storage": "node --test test/storage-posix-filesystem-cas.test.mjs"
+    "test:storage": "node --test test/storage-posix-filesystem-cas.test.mjs test/storage-registration.test.mjs"
   }
 }
