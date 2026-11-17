@@ -39,7 +39,7 @@ test("causal lineage binds MCP → admission → instance → processor → evid
 
   assert.equal(result.status, "WITNESSED");
   assert.equal(result.message.messageId, "MSG-CAUSAL-001");
-  assert.equal(result.proposal.proposalId.length, 32);
+  assert.match(result.proposal.proposalId, /^proposal_[0-9a-f]{24}$/);
   assert.match(result.proposal.proposalHash, /^[0-9a-f]{64}$/);
   assert.match(result.admission.admissionId, /^admission_[0-9a-f]{24}$/);
   assert.match(result.instanceId, /^instance_[0-9a-f]{24}$/);

@@ -7,8 +7,8 @@ function freeze(value) {
 }
 
 function difference(observedState, desiredState) {
-  const keys = new Set([...Object.keys(observedState), ...Object.keys(desiredState)]);
-  return [...keys].sort().flatMap((key) => {
+  // Desired state is a projection: unrequested witness metadata must not create false drift.
+  return Object.keys(desiredState).sort().flatMap((key) => {
     if (observedState[key] === desiredState[key]) return [];
     return [{
       field: key,
