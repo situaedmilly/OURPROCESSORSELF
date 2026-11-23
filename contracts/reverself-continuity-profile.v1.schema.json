@@ -1,0 +1,258 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ourself:reverself-continuity-profile:v1",
+  "title": "REVERSELF Continuity Profile v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "continuity_id",
+    "subject",
+    "components",
+    "recovery",
+    "limitations"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ourself.reverself.continuity-profile.v1"
+    },
+    "continuity_id": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]+$"
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "vm_name",
+        "vm_uuid",
+        "backend",
+        "guest_architecture",
+        "application_context"
+      ],
+      "properties": {
+        "vm_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "vm_uuid": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "backend": {
+          "enum": [
+            "QEMU"
+          ]
+        },
+        "guest_architecture": {
+          "enum": [
+            "aarch64",
+            "x86_64",
+            "other"
+          ]
+        },
+        "application_context": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        }
+      }
+    },
+    "components": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "component_id",
+          "role",
+          "envelope_ref",
+          "payload_state",
+          "envelope_binding"
+        ],
+        "properties": {
+          "component_id": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]+$"
+          },
+          "role": {
+            "enum": [
+              "VM_CONFIGURATION",
+              "GUEST_DISK",
+              "DISK_BACKING_FILE",
+              "FIRMWARE_CODE",
+              "FIRMWARE_VARIABLES",
+              "QEMU_RUNTIME",
+              "DEPENDENCY_LOCK",
+              "PRESERVATION_COPY",
+              "WORKING_COPY",
+              "OBSERVATION_EVIDENCE",
+              "CUSTODY_EVIDENCE",
+              "WITNESS_EVIDENCE"
+            ]
+          },
+          "envelope_ref": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]+$"
+          },
+          "payload_state": {
+            "enum": [
+              "UNKNOWN",
+              "DECLARED",
+              "LOCATED",
+              "OBSERVED",
+              "INTEGRITY_VERIFIED",
+              "ADMITTED",
+              "QUARANTINED",
+              "MISSING"
+            ]
+          },
+          "depends_on": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            }
+          },
+          "envelope_binding": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "envelope_id",
+              "object_id",
+              "reality_id",
+              "instance_id",
+              "payload_sha256",
+              "byte_count",
+              "content_key",
+              "lifecycle",
+              "transition_event_refs"
+            ],
+            "properties": {
+              "envelope_id": {
+                "type": "string",
+                "minLength": 8,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]+$"
+              },
+              "object_id": {
+                "type": "string",
+                "minLength": 8,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]+$"
+              },
+              "reality_id": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 128
+              },
+              "instance_id": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 128
+              },
+              "payload_sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "byte_count": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "content_key": {
+                "type": "string",
+                "pattern": "^sha256:[a-f0-9]{64}$"
+              },
+              "lifecycle": {
+                "enum": [
+                  "DECLARED",
+                  "OBSERVED",
+                  "INTEGRITY_VERIFIED",
+                  "ADMITTED",
+                  "PERSISTED",
+                  "RECONTACT_VERIFIED",
+                  "WITNESSED",
+                  "QUARANTINED",
+                  "RETIRED"
+                ]
+              },
+              "transition_event_refs": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 8,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]+$"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "recovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target_reality",
+        "source_immutable",
+        "restore_authority",
+        "status"
+      ],
+      "properties": {
+        "target_reality": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 128
+        },
+        "source_immutable": {
+          "const": true
+        },
+        "restore_authority": {
+          "enum": [
+            "NOT_REQUESTED",
+            "PENDING",
+            "ADMITTED",
+            "REJECTED"
+          ]
+        },
+        "status": {
+          "enum": [
+            "DISCOVERY",
+            "ACQUISITION",
+            "PRESERVATION",
+            "ADMISSION",
+            "RESTORE_READY",
+            "RESTORING",
+            "OBSERVING",
+            "RECONTACT",
+            "WITNESSING",
+            "RECOVERY_BLOCKED",
+            "RECOVERED",
+            "QUARANTINED"
+          ]
+        }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 2048
+      }
+    }
+  }
+}
