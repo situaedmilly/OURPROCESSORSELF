@@ -1,3 +1,9 @@
+import { readFileSync } from "node:fs";
+import { validateJsonSchema, validateSchema } from "./json-schema.mjs";
+
+const TRANSITION_SCHEMA = JSON.parse(readFileSync(new URL("../../contracts/dataself/ourdata-transition.v1.schema.json", import.meta.url), "utf8"));
+const TRANSITION_SCHEMA_ERRORS = validateSchema(TRANSITION_SCHEMA);
+
 import { createHash } from "node:crypto";
 
 const hash = (value) => createHash("sha256").update(value).digest("hex");
@@ -16,7 +22,7 @@ const phases = ["PROPOSED", "AUTHORIZED", "ADMITTED", "ACTUATED", "OBSERVED", "R
 
 /** Verifies a complete journal segment beginning at sequence zero. */
 export function verifyTransitionJournal(events) {
-  const errors = [];
+  const errors = TRANSITION_SCHEMA_ERRORS.map((error) => "UNSUPPORTED_CANONICAL_SCHEMA:" + error);
   if (!Array.isArray(events) || events.length === 0) {
     return Object.freeze({ valid: false, errors: Object.freeze(["JOURNAL_EVENTS_REQUIRED"]) });
   }
@@ -29,6 +35,11 @@ export function verifyTransitionJournal(events) {
     const event = events[index];
     if (!event || typeof event !== "object" || Array.isArray(event)) {
       errors.push(`EVENT_NOT_OBJECT:${index}`);
+      continue;
+    }
+    const schemaErrors = validateJsonSchema(event, TRANSITION_SCHEMA);
+    if (schemaErrors.length) {
+      errors.push(...schemaErrors.map((error) => `EVENT_CANONICAL_SCHEMA_INVALID:${index}:${error}`));
       continue;
     }
     if (event.schema !== "ourdata.transition-event.v1") errors.push(`EVENT_SCHEMA_INVALID:${index}`);
@@ -60,19 +71,63 @@ export function verifyTransitionJournal(events) {
       if (JSON.stringify(canonical(event.target)) !== JSON.stringify(canonical(first.target))) errors.push(`TRANSITION_TARGET_CHANGED:${transitionId}`);
       if (JSON.stringify(canonical(event.preimage)) !== JSON.stringify(canonical(first.preimage))) errors.push(`TRANSITION_PREIMAGE_CHANGED:${transitionId}`);
     }
-    const positive = list.map((event) => event.event_type);
-    const phaseIndexes = positive.map((phase) => phases.indexOf(phase));
-    if (phaseIndexes.some((phase) => phase < 0)) {
-      if (!positive.every((phase) => ["REJECTED", "QUARANTINED", "RETIRED"].includes(phase))) errors.push(`INVALID_TERMINAL_EVENT_SEQUENCE:${transitionId}`);
-    } else {
-      for (let i = 1; i < phaseIndexes.length; i++) {
-        if (phaseIndexes[i] !== phaseIndexes[i - 1] + 1) errors.push(`TRANSITION_PHASE_GAP_OR_REORDER:${transitionId}`);
+    const eventTypes = list.map((event) => event.event_type);
+    const terminalTypes = ["REJECTED", "QUARANTINED", "RETIRED"];
+    const terminalIndexes = eventTypes.map((type, index) => terminalTypes.includes(type) ? index : -1).filter((index) => index >= 0);
+    if (first.event_type !== "PROPOSED") errors.push(`TRANSITION_MUST_BEGIN_PROPOSED:${transitionId}`);
+    if (terminalIndexes.length > 1) errors.push(`CONFLICTING_TERMINAL_EVENTS:${transitionId}`);
+    if (terminalIndexes.length === 1 && terminalIndexes[0] !== list.length - 1) errors.push(`TERMINAL_EVENT_NOT_FINAL:${transitionId}`);
+    const positiveTypes = eventTypes.filter((type) => phases.includes(type));
+    if (positiveTypes.length !== eventTypes.length - terminalIndexes.length) errors.push(`INVALID_TERMINAL_EVENT_SEQUENCE:${transitionId}`);
+    const phaseIndexes = positiveTypes.map((phase) => phases.indexOf(phase));
+    for (let i = 0; i < phaseIndexes.length; i++) {
+      if (phaseIndexes[i] !== i) errors.push(`TRANSITION_PHASE_GAP_OR_REORDER:${transitionId}`);
+    }
+    if (terminalTypes.includes(eventTypes.at(-1))) {
+      if (eventTypes.at(-1) === "RETIRED" && (first.operation !== "RETIRE" || positiveTypes.at(-1) !== "RECONTACTED")) {
+        errors.push(`RETIREMENT_REQUIRES_RECONTACTED_RETIRE_OPERATION:${transitionId}`);
+      }
+      if (eventTypes.at(-1) === "REJECTED" && positiveTypes.some((type) => ["ADMITTED", "ACTUATED", "OBSERVED", "RECONTACTED"].includes(type))) {
+        errors.push(`REJECTION_AFTER_ADMISSION_OR_EFFECT:${transitionId}`);
       }
     }
     if (["CREATE"].includes(first.operation)) {
       if (first.preimage?.expected_sha256 !== null || first.preimage?.expected_object_sequence !== 0) errors.push(`CREATE_PREIMAGE_INVALID:${transitionId}`);
     } else if (!first.preimage?.expected_sha256 || !Number.isInteger(first.preimage?.expected_object_sequence)) {
       errors.push(`NON_CREATE_PREIMAGE_REQUIRED:${transitionId}`);
+    }
+    let authorizedRef = null;
+    let admissionRef = null;
+    let capability = first.authority?.capability;
+    let committedResult = null;
+    for (const event of list) {
+      const authority = event.authority ?? {};
+      if (event.event_type === "AUTHORIZED" || ["ADMITTED", "ACTUATED", "OBSERVED", "RECONTACTED"].includes(event.event_type)) {
+        if (typeof authority.authority_ref !== "string" || !authority.authority_ref.trim()) errors.push(`AUTHORITY_REFERENCE_REQUIRED:${event.event_id}`);
+        if (authorizedRef === null) authorizedRef = authority.authority_ref;
+        else if (authority.authority_ref !== authorizedRef) errors.push(`AUTHORITY_BINDING_CHANGED:${event.event_id}`);
+      }
+      if (["ADMITTED", "ACTUATED", "OBSERVED", "RECONTACTED"].includes(event.event_type)) {
+        if (typeof authority.admission_ref !== "string" || !authority.admission_ref.trim()) errors.push(`ADMISSION_REFERENCE_REQUIRED:${event.event_id}`);
+        if (admissionRef === null) admissionRef = authority.admission_ref;
+        else if (authority.admission_ref !== admissionRef) errors.push(`ADMISSION_BINDING_CHANGED:${event.event_id}`);
+      } else if (admissionRef !== null && authority.admission_ref !== admissionRef) {
+        errors.push(`ADMISSION_BINDING_CHANGED:${event.event_id}`);
+      }
+      if (authority.capability !== capability) errors.push(`AUTHORITY_CAPABILITY_CHANGED:${event.event_id}`);
+
+      if (["ACTUATED", "OBSERVED", "RECONTACTED"].includes(event.event_type)) {
+        const result = event.result;
+        if (!result?.payload_sha256 || !result?.envelope_sha256 || !Number.isInteger(result?.object_sequence)) errors.push(`RESULT_BINDING_REQUIRED:${event.event_id}`);
+        if (result?.object_sequence !== first.preimage?.expected_object_sequence + 1) errors.push(`RESULT_SEQUENCE_MISMATCH:${event.event_id}`);
+        if (event.target?.object_key !== `sha256:${result?.payload_sha256}`) errors.push(`TARGET_CONTENT_KEY_MISMATCH:${event.event_id}`);
+        if (committedResult === null) committedResult = result;
+        else if (JSON.stringify(canonical(result)) !== JSON.stringify(canonical(committedResult))) errors.push(`RESULT_BINDING_CHANGED:${event.event_id}`);
+      } else if (event.result?.payload_sha256 !== null || event.result?.envelope_sha256 !== null || event.result?.object_sequence !== null) {
+        errors.push(`RESULT_PRESENT_BEFORE_ACTUATION:${event.event_id}`);
+      }
+      if (event.event_type === "OBSERVED" && !(event.evidence?.observation_refs?.length)) errors.push(`OBSERVATION_EVIDENCE_REQUIRED:${event.event_id}`);
+      if (event.event_type === "RECONTACTED" && !(event.evidence?.receipt_refs?.length)) errors.push(`RECONTACT_RECEIPT_REQUIRED:${event.event_id}`);
     }
     for (const event of list) {
       if (["ACTUATED", "OBSERVED", "RECONTACTED"].includes(event.event_type)) {
