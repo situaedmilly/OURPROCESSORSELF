@@ -119,8 +119,8 @@ function fullTransition({
   return events;
 }
 
-function resealChain(events) {
-  let previous = null;
+function resealChain(events, initialPrevious = null) {
+  let previous = initialPrevious;
   return events.map((event) => {
     const { event_sha256: _old, ...body } = event;
     const sealed = seal({ ...body, previous_event_sha256: previous });
@@ -210,10 +210,7 @@ test("same-object update requires the exact prior recontacted digest and sequenc
     ...event,
     preimage: { expected_sha256: "9".repeat(64), expected_object_sequence: 0 }
   } : event);
-  const invalid = verifyTransitionJournal([...first, ...resealChain(invalidSecond).map((event, index) => ({
-    ...event,
-    journal_sequence: index + 6
-  }))]);
+  const invalid = verifyTransitionJournal([...first, ...resealChain(invalidSecond, last.event_sha256)]);
   assert.ok(invalid.errors.includes("OBJECT_PREIMAGE_DIGEST_MISMATCH:transition:full-0002"));
   assert.ok(invalid.errors.includes("OBJECT_PREIMAGE_SEQUENCE_MISMATCH:transition:full-0002"));
 });
