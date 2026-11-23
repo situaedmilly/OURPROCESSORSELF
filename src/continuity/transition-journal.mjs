@@ -1,10 +1,10 @@
+import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { validateJsonSchema, validateSchema } from "./json-schema.mjs";
 
 const TRANSITION_SCHEMA = JSON.parse(readFileSync(new URL("../../contracts/dataself/ourdata-transition.v1.schema.json", import.meta.url), "utf8"));
 const TRANSITION_SCHEMA_ERRORS = validateSchema(TRANSITION_SCHEMA);
 
-import { createHash } from "node:crypto";
 
 const hash = (value) => createHash("sha256").update(value).digest("hex");
 function canonical(value) {
