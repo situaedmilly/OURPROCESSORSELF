@@ -97,10 +97,11 @@ test("forbidden additional envelope properties cannot resolve", async () => {
 });
 
 test("invalid envelope patterns and enum values cannot resolve", async () => {
-  const invalid = { ...envelope, envelope_id: "bad id", object_class: "UNRECOGNIZED" };
+  const invalid = { ...envelope, envelope_id: "x", object_class: "UNRECOGNIZED", payload: { ...envelope.payload, media_type: "ab" } };
   const result = await resolveContinuityEvidence(profile, { ...adapter, resolveEnvelope: async () => invalid });
   assert.equal(result.resolved, false);
   assert.ok(result.errors.some((error) => error.includes("PATTERN")));
+  assert.ok(result.errors.some((error) => error.includes("MIN_LENGTH")));
   assert.ok(result.errors.some((error) => error.includes("ENUM")));
 });
 
