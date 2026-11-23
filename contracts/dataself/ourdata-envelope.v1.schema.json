@@ -1,0 +1,379 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ourself:ourdata-envelope:v1",
+  "title": "OURDATASELFBASE Sovereign Data Envelope v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "envelope_id",
+    "object_id",
+    "reality_id",
+    "instance_id",
+    "object_class",
+    "payload",
+    "provenance",
+    "jurisdiction",
+    "custody",
+    "lineage",
+    "authority",
+    "verification",
+    "lifecycle"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ourdata.envelope.v1"
+    },
+    "envelope_id": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]+$"
+    },
+    "object_id": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]+$"
+    },
+    "reality_id": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 128
+    },
+    "instance_id": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 128
+    },
+    "object_class": {
+      "enum": [
+        "MEMORY_OBJECT",
+        "WORLD_EVENT",
+        "EVIDENCE_ARTIFACT",
+        "GOVERNANCE_ARTIFACT",
+        "PROJECTION",
+        "OPERATIONAL_EVENT"
+      ]
+    },
+    "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "media_type",
+        "encoding",
+        "byte_count",
+        "sha256",
+        "content_key"
+      ],
+      "properties": {
+        "media_type": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 128
+        },
+        "encoding": {
+          "enum": [
+            "identity",
+            "utf-8",
+            "base64"
+          ]
+        },
+        "byte_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "content_key": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "locator": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "origin_kind",
+        "source_ref",
+        "created_at",
+        "observed_at"
+      ],
+      "properties": {
+        "origin_kind": {
+          "enum": [
+            "FOUNDER_AUTHORED",
+            "RUNTIME_OBSERVED",
+            "EXTERNAL_SOURCE",
+            "DERIVED",
+            "MIGRATED"
+          ]
+        },
+        "source_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "transformation_ref": {
+          "type": "string",
+          "maxLength": 2048
+        }
+      }
+    },
+    "jurisdiction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "governing_reality",
+        "data_classification",
+        "allowed_processors"
+      ],
+      "properties": {
+        "governing_reality": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 128
+        },
+        "data_classification": {
+          "enum": [
+            "PUBLIC",
+            "INTERNAL",
+            "CONFIDENTIAL",
+            "RESTRICTED",
+            "SECRET"
+          ]
+        },
+        "allowed_processors": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 128
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "custody": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "storage_adapter",
+        "custodian_refs",
+        "replica_refs",
+        "independent_custody",
+        "independence_evidence_refs"
+      ],
+      "properties": {
+        "storage_adapter": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 128
+        },
+        "custodian_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 256
+          },
+          "uniqueItems": true
+        },
+        "replica_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 2048
+          },
+          "uniqueItems": true
+        },
+        "independent_custody": {
+          "type": "boolean"
+        },
+        "independence_evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 2048
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "lineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sequence",
+        "predecessor_envelope_id",
+        "predecessor_sha256",
+        "journal_ref"
+      ],
+      "properties": {
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "predecessor_envelope_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "predecessor_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "journal_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authority_ref",
+        "admission_ref",
+        "capability",
+        "decision_state"
+      ],
+      "properties": {
+        "authority_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "admission_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "capability": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "decision_state": {
+          "enum": [
+            "NOT_REQUESTED",
+            "PROPOSED",
+            "AUTHORIZED",
+            "ADMITTED",
+            "REJECTED",
+            "REVOKED"
+          ]
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "integrity",
+        "observed",
+        "persisted",
+        "recontact",
+        "witness",
+        "receipt_refs",
+        "observation_refs",
+        "witness_refs"
+      ],
+      "properties": {
+        "integrity": {
+          "enum": [
+            "UNVERIFIED",
+            "MATCH",
+            "MISMATCH"
+          ]
+        },
+        "observed": {
+          "type": "boolean"
+        },
+        "persisted": {
+          "type": "boolean"
+        },
+        "recontact": {
+          "enum": [
+            "NOT_TESTED",
+            "MATCH",
+            "MISMATCH"
+          ]
+        },
+        "witness": {
+          "enum": [
+            "NONE",
+            "SELF_WITNESSED",
+            "INDEPENDENT_PENDING",
+            "INDEPENDENT_VERIFIED"
+          ]
+        },
+        "receipt_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 2048
+          },
+          "uniqueItems": true
+        },
+        "observation_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 2048
+          },
+          "uniqueItems": true
+        },
+        "witness_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 2048
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "lifecycle": {
+      "enum": [
+        "DECLARED",
+        "OBSERVED",
+        "INTEGRITY_VERIFIED",
+        "ADMITTED",
+        "PERSISTED",
+        "RECONTACT_VERIFIED",
+        "WITNESSED",
+        "QUARANTINED",
+        "RETIRED"
+      ]
+    }
+  }
+}
