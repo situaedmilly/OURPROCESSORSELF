@@ -224,3 +224,13 @@ test("conflicting terminal events cannot coexist in one transition", () => {
   assert.ok(result.errors.includes("CONFLICTING_TERMINAL_EVENTS:transition:0001"));
   assert.ok(result.errors.includes("TERMINAL_EVENT_NOT_FINAL:transition:0001"));
 });
+
+test("recontact cannot switch the canonical object or envelope target", () => {
+  const valid = fullTransition();
+  const changed = valid.map((event, index) => index === 5 ? {
+    ...event,
+    target: { ...event.target, envelope_id: "envelope:other-object" }
+  } : event);
+  const result = verifyTransitionJournal(resealChain(changed));
+  assert.ok(result.errors.includes("TRANSITION_TARGET_CHANGED:transition:full-0001"));
+});
