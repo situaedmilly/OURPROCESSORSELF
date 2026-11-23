@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { validateJsonSchema, validateSchema } from "./json-schema.mjs";
 
@@ -5,7 +6,6 @@ const ENVELOPE_SCHEMA = JSON.parse(readFileSync(new URL("../../contracts/datasel
 const TRANSITION_SCHEMA = JSON.parse(readFileSync(new URL("../../contracts/dataself/ourdata-transition.v1.schema.json", import.meta.url), "utf8"));
 const SCHEMA_ERRORS = [...validateSchema(ENVELOPE_SCHEMA), ...validateSchema(TRANSITION_SCHEMA)];
 
-import { createHash } from "node:crypto";
 
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
 
