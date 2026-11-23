@@ -1,3 +1,9 @@
+import { readFileSync } from "node:fs";
+import { validateJsonSchema, validateSchema } from "./json-schema.mjs";
+
+const PROFILE_SCHEMA_DOCUMENT = JSON.parse(readFileSync(new URL("../../contracts/reverself-continuity-profile.v1.schema.json", import.meta.url), "utf8"));
+const PROFILE_SCHEMA_ERRORS = validateSchema(PROFILE_SCHEMA_DOCUMENT);
+
 const PROFILE_SCHEMA = "ourself.reverself.continuity-profile.v1";
 const PAYLOAD_STATES = new Set([
   "UNKNOWN", "DECLARED", "LOCATED", "OBSERVED",
