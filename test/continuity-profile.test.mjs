@@ -179,3 +179,47 @@ test("firmware and dependency artifacts are mandatory for boot readiness", () =>
   assert.ok(result.restore_gate.blockers.includes("REQUIRED_COMPONENT_ABSENT:FIRMWARE_VARIABLES"));
   assert.ok(result.restore_gate.blockers.includes("REQUIRED_COMPONENT_ABSENT:DEPENDENCY_LOCK"));
 });
+
+test("missing required nested profile properties fail the canonical profile schema", () => {
+  const subject = { ...profile().subject };
+  delete subject.application_context;
+  const result = validateContinuityProfile(profile({ subject }));
+  assert.equal(result.valid, false);
+  assert.ok(result.errors.some((error) => error.includes("$.subject:REQUIRED:application_context")));
+});
+
+test("forbidden profile and component properties are rejected", () => {
+  const value = profile({ forged_authority: true });
+  value.components[0].unreviewed_flag = true;
+  const result = validateContinuityProfile(value);
+  assert.equal(result.valid, false);
+  assert.ok(result.errors.some((error) => error.includes("ADDITIONAL_PROPERTY:forged_authority")));
+  assert.ok(result.errors.some((error) => error.includes("ADDITIONAL_PROPERTY:unreviewed_flag")));
+});
+
+test("profile patterns, lengths and enumerations are enforced", () => {
+  const subject = { ...profile().subject, vm_uuid: "not-a-uuid", guest_architecture: "quantum" };
+  const result = validateContinuityProfile(profile({ continuity_id: "x", subject }));
+  assert.equal(result.valid, false);
+  assert.ok(result.errors.some((error) => error.includes("MIN_LENGTH")));
+  assert.ok(result.errors.some((error) => error.includes("PATTERN")));
+  assert.ok(result.errors.some((error) => error.includes("ENUM")));
+});
+
+test("component binding requires a valid digest, nonnegative integer byte count and unique event refs", () => {
+  const components = profile().components;
+  components[0] = {
+    ...components[0],
+    envelope_binding: {
+      ...components[0].envelope_binding,
+      payload_sha256: "NOT-A-DIGEST",
+      byte_count: -1,
+      transition_event_refs: ["event:duplicate", "event:duplicate"]
+    }
+  };
+  const result = validateContinuityProfile(profile({ components }));
+  assert.equal(result.valid, false);
+  assert.ok(result.errors.some((error) => error.includes("PATTERN")));
+  assert.ok(result.errors.some((error) => error.includes("MINIMUM")));
+  assert.ok(result.errors.some((error) => error.includes("UNIQUE_ITEMS")));
+});
