@@ -20,7 +20,8 @@ const SHA256 = /^[a-f0-9]{64}$/;
 
 /** Structural-only validator. It never resolves envelopes or reads payload bytes. */
 export function validateContinuityProfile(profile) {
-  const errors = [];
+  const errors = PROFILE_SCHEMA_ERRORS.length ? ["PROFILE_SCHEMA_UNSUPPORTED:" + PROFILE_SCHEMA_ERRORS.join(",")] : [];
+  errors.push(...validateJsonSchema(profile, PROFILE_SCHEMA_DOCUMENT).map((error) => "JSON_SCHEMA:" + error));
   const blockers = [];
   if (!isRecord(profile)) {
     return Object.freeze({
