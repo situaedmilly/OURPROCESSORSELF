@@ -1,0 +1,261 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ourself:ourdata-transition-event:v1",
+  "title": "OURDATASELFBASE Append-only Transition Event v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "event_id",
+    "transition_id",
+    "reality_id",
+    "instance_id",
+    "object_id",
+    "event_type",
+    "operation",
+    "journal_sequence",
+    "previous_event_sha256",
+    "nonce",
+    "target",
+    "preimage",
+    "result",
+    "authority",
+    "actor_id",
+    "occurred_at",
+    "evidence",
+    "event_sha256"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ourdata.transition-event.v1"
+    },
+    "event_id": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]+$"
+    },
+    "transition_id": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]+$"
+    },
+    "reality_id": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 128
+    },
+    "instance_id": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 128
+    },
+    "object_id": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 160
+    },
+    "event_type": {
+      "enum": [
+        "PROPOSED",
+        "AUTHORIZED",
+        "ADMITTED",
+        "ACTUATED",
+        "OBSERVED",
+        "RECONTACTED",
+        "REJECTED",
+        "QUARANTINED",
+        "RETIRED"
+      ]
+    },
+    "operation": {
+      "enum": [
+        "CREATE",
+        "UPDATE",
+        "REPAIR_AFTER_DRIFT",
+        "ADOPT_EXISTING",
+        "RETIRE"
+      ]
+    },
+    "journal_sequence": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "previous_event_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "nonce": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "storage_adapter",
+        "object_key",
+        "envelope_id"
+      ],
+      "properties": {
+        "storage_adapter": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 128
+        },
+        "object_key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "envelope_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 160
+        }
+      }
+    },
+    "preimage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expected_sha256",
+        "expected_object_sequence"
+      ],
+      "properties": {
+        "expected_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "expected_object_sequence": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "payload_sha256",
+        "envelope_sha256",
+        "object_sequence"
+      ],
+      "properties": {
+        "payload_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "envelope_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "object_sequence": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authority_ref",
+        "admission_ref",
+        "capability"
+      ],
+      "properties": {
+        "authority_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "admission_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "capability": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        }
+      }
+    },
+    "actor_id": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 256
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observation_refs",
+        "receipt_refs",
+        "witness_refs"
+      ],
+      "properties": {
+        "observation_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 2048
+          },
+          "uniqueItems": true
+        },
+        "receipt_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 2048
+          },
+          "uniqueItems": true
+        },
+        "witness_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 2048
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "attestation_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "event_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+}
