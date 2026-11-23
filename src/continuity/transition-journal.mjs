@@ -143,6 +143,31 @@ export function verifyTransitionJournal(events) {
     }
   }
 
+  const objectHistory = new Map();
+  const orderedTransitions = [...byTransition.entries()].sort((a, b) => a[1][0].journal_sequence - b[1][0].journal_sequence);
+  for (const [transitionId, list] of orderedTransitions) {
+    const first = list[0];
+    const prior = objectHistory.get(first.object_id);
+    if (first.operation === "CREATE") {
+      if (prior) errors.push(`CREATE_AFTER_EXISTING_OBJECT_STATE:${transitionId}`);
+      if (first.preimage?.expected_sha256 !== null || first.preimage?.expected_object_sequence !== 0) errors.push(`CREATE_PREIMAGE_INVALID:${transitionId}`);
+    } else {
+      if (!prior) errors.push(`OBJECT_PREIMAGE_WITHOUT_PRIOR_RECONTACT:${transitionId}`);
+      else {
+        if (first.preimage?.expected_sha256 !== prior.payload_sha256) errors.push(`OBJECT_PREIMAGE_DIGEST_MISMATCH:${transitionId}`);
+        if (first.preimage?.expected_object_sequence !== prior.object_sequence) errors.push(`OBJECT_PREIMAGE_SEQUENCE_MISMATCH:${transitionId}`);
+      }
+    }
+    const finalEvent = list.at(-1);
+    if (finalEvent?.event_type === "RECONTACTED") {
+      objectHistory.set(first.object_id, {
+        payload_sha256: finalEvent.result?.payload_sha256,
+        object_sequence: finalEvent.result?.object_sequence,
+        envelope_id: finalEvent.target?.envelope_id
+      });
+    }
+  }
+
   return Object.freeze({
     valid: errors.length === 0,
     errors: Object.freeze([...new Set(errors)]),
