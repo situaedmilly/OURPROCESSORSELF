@@ -1,3 +1,10 @@
+import { readFileSync } from "node:fs";
+import { validateJsonSchema, validateSchema } from "./json-schema.mjs";
+
+const ENVELOPE_SCHEMA = JSON.parse(readFileSync(new URL("../../contracts/dataself/ourdata-envelope.v1.schema.json", import.meta.url), "utf8"));
+const TRANSITION_SCHEMA = JSON.parse(readFileSync(new URL("../../contracts/dataself/ourdata-transition.v1.schema.json", import.meta.url), "utf8"));
+const SCHEMA_ERRORS = [...validateSchema(ENVELOPE_SCHEMA), ...validateSchema(TRANSITION_SCHEMA)];
+
 import { createHash } from "node:crypto";
 
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
@@ -13,7 +20,7 @@ const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
  * It does not establish custody independence, authority, journal completeness, or witness independence.
  */
 export async function resolveContinuityEvidence(profile, adapter) {
-  const errors = [];
+  const errors = SCHEMA_ERRORS.map((error) => "UNSUPPORTED_CANONICAL_SCHEMA:" + error);
   const resolved = [];
   if (!adapter || typeof adapter.resolveEnvelope !== "function" ||
       typeof adapter.readPayload !== "function" ||
@@ -32,6 +39,11 @@ export async function resolveContinuityEvidence(profile, adapter) {
     catch { errors.push(`ENVELOPE_LOOKUP_FAILED:${component.component_id}`); continue; }
     if (!envelope) {
       errors.push(`ENVELOPE_NOT_FOUND:${component.component_id}`);
+      continue;
+    }
+    const envelopeSchemaErrors = validateJsonSchema(envelope, ENVELOPE_SCHEMA);
+    if (envelopeSchemaErrors.length) {
+      errors.push(...envelopeSchemaErrors.map((error) => `ENVELOPE_CANONICAL_SCHEMA_INVALID:${component.component_id}:${error}`));
       continue;
     }
     if (envelope.schema !== "ourdata.envelope.v1") errors.push(`ENVELOPE_SCHEMA_MISMATCH:${component.component_id}`);
@@ -67,6 +79,11 @@ export async function resolveContinuityEvidence(profile, adapter) {
       catch { errors.push(`TRANSITION_LOOKUP_FAILED:${eventId}`); continue; }
       if (!event) {
         errors.push(`TRANSITION_EVENT_NOT_FOUND:${eventId}`);
+        continue;
+      }
+      const transitionSchemaErrors = validateJsonSchema(event, TRANSITION_SCHEMA);
+      if (transitionSchemaErrors.length) {
+        errors.push(...transitionSchemaErrors.map((error) => `TRANSITION_CANONICAL_SCHEMA_INVALID:${eventId}:${error}`));
         continue;
       }
       if (event.schema !== "ourdata.transition-event.v1" || event.event_id !== eventId ||
