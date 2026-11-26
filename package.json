@@ -9,6 +9,7 @@
   "scripts": {
     "boot": "node src/boot.mjs",
     "mcp": "node mcp/server.mjs",
-    "test": "node --test test/processor.test.mjs test/repository-machine.test.mjs test/repository-machine.pressure.test.mjs test/causal-lineage.test.mjs test/repository-actuator.test.mjs test/causal-actuation.test.mjs test/verified-continuation.test.mjs test/verified-continuation.runtime.test.mjs"
+    "test": "node --test test/processor.test.mjs test/repository-machine.test.mjs test/repository-machine.pressure.test.mjs test/causal-lineage.test.mjs test/repository-actuator.test.mjs test/causal-actuation.test.mjs test/verified-continuation.test.mjs test/verified-continuation.runtime.test.mjs",
+    "protocolself:verify": "node --input-type=module -e \"import { bootProtocolSelfRegistry } from './runtime/protocolself-registry.mjs'; console.log(JSON.stringify(bootProtocolSelfRegistry(), null, 2))\""
   }
 }
