@@ -1,5 +1,6 @@
 import {encode,OPCODE} from "./isa.mjs";
 import {OurselfProcessor} from "./processor.mjs";
+import {bootProtocolSelfRegistry} from "../runtime/protocolself-registry.mjs";
 const protocolselfBoot=bootProtocolSelfRegistry();
 const program=Uint8Array.from([...encode(OPCODE.CONST,0,0,7),...encode(OPCODE.CONST,1,0,5),...encode(OPCODE.ADD,2,0,1),...encode(OPCODE.STORE,2,0,0x10),...encode(OPCODE.HALT)]);
 const processor=new OurselfProcessor({program});
