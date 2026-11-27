@@ -1,0 +1,420 @@
+{
+  "graph_id": "OURSELF-NETWORK-SOVEREIGNTY-LAUNCH-SELFGRAPH-0001",
+  "schema": "OURSELF.CONTINUATION.SELFGRAPH.v0.1",
+  "version": "0.1.0",
+  "reality": "OURSELF_NETWORK_SOVEREIGNTY",
+  "purpose": "Manifest and sequence the launch of an independently available OURSELF network reality, with identity-bound admission and witnessed recovery.",
+  "authority": {
+    "founder_authority": "GENESIS_AUTHORITY",
+    "execution_authority": "REQUIRES_EXPLICIT_GATE_ADMISSION",
+    "graph_manifest_grants_authority": false,
+    "receipt_is_effect": false
+  },
+  "constitutional_invariants": [
+    "HOST != INSTANCE",
+    "INSTANCE != PROCESSOR",
+    "PROCESSOR != AUTHORITY",
+    "AUTHORITY != ACTUATOR",
+    "ACTUATOR != WITNESS",
+    "WITNESS != REALITY",
+    "MAC_POWER_OFF_MUST_NOT_DISABLE_CRITICAL_NETWORK_SERVICES",
+    "TUNNEL_HEALTH != VPN_OPERATIONAL",
+    "TRANSPORT_REACHABILITY != AUTHENTICATED_ADMISSION",
+    "MODEL_BACKEND_ENDPOINT != MCP_ENDPOINT",
+    "VALID != AUTHORIZED",
+    "AUTHORIZED != ADMITTED"
+  ],
+  "current_observed_baseline": {
+    "observation_date": "2026-11-26",
+    "cloudflare_tunnels": {
+      "active_connectors": [
+        {
+          "name": "AETHERBRIDGE",
+          "connections": 4,
+          "hosting_dependency": "MAC"
+        },
+        {
+          "name": "conversation-event-membrane",
+          "connections": 4,
+          "hosting_dependency": "MAC"
+        },
+        {
+          "name": "getsituated-web",
+          "connections": 4,
+          "hosting_dependency": "MAC"
+        },
+        {
+          "name": "spiritualgoddess-web",
+          "connections": 7,
+          "hosting_dependency": "MAC"
+        }
+      ],
+      "inactive_connectors": [
+        {
+          "name": "SELFPI-MGMT",
+          "connections": 0
+        },
+        {
+          "name": "SELFPI-OLLAMA",
+          "connections": 0
+        },
+        {
+          "name": "OURHOSTSELF-INGRESS",
+          "connections": 0
+        }
+      ]
+    },
+    "wireguard": "NOT_INSTALLED_OR_VERIFIED_ON_MAC",
+    "tailscale": "NOT_INSTALLED_OR_VERIFIED_ON_MAC",
+    "macos_vpn_services": "NONE_LISTED",
+    "selfpi_ssh_forward": "FAILED_LOCAL_CONNECTIVITY_TEST",
+    "selfpi_cross_site_reachability": "UNVERIFIED",
+    "aethernet": "DOCTRINE_ONLY",
+    "selfvpn": "DORMANT_UNVERIFIED",
+    "ourtunnelself": "IMPLEMENTATION_AND_LIVE_CONNECTIVITY_UNVERIFIED",
+    "ourhostself": "NO_INDEPENDENT_PHYSICAL_HOST_ESTABLISHED",
+    "pipeportal": "EXISTING_RUNTIME_LINEAGE; CURRENT_REMOTE_ADMISSION_UNVERIFIED",
+    "dataself": "DURABLE_NETWORK_EVENT_CUSTODY_NOT_VERIFIED"
+  },
+  "nodes": [
+    {
+      "id": "N00",
+      "name": "SELFGRAPH_LAUNCH_CONTROLLER",
+      "type": "CONTROL",
+      "status": "MANIFESTED",
+      "purpose": "Sequence gates, dependencies, receipts and rollback boundaries."
+    },
+    {
+      "id": "N01",
+      "name": "OURHOSTSELF",
+      "type": "HOST_REALITY",
+      "status": "BLOCKED_HOST_SELECTION",
+      "purpose": "Independent persistent network anchor, not dependent on Mac uptime.",
+      "acceptance": [
+        "physical_host_identified",
+        "power_and_reboot_verified",
+        "persistent_runtime_verified",
+        "storage_and_recovery_verified",
+        "independent_network_reachability_verified"
+      ]
+    },
+    {
+      "id": "N02",
+      "name": "OURTUNNELSELF",
+      "type": "CONNECTIVITY_CONTROL",
+      "status": "UNVERIFIED",
+      "purpose": "Device registration, reconnection, relay coordination and path health.",
+      "acceptance": [
+        "device_identity_bound",
+        "reconnect_test_passed",
+        "relay_fallback_tested"
+      ]
+    },
+    {
+      "id": "N03",
+      "name": "SELFVPN",
+      "type": "ENCRYPTED_OVERLAY",
+      "status": "DORMANT_UNVERIFIED",
+      "purpose": "Authenticated encrypted device-to-device transport.",
+      "acceptance": [
+        "wireguard_or_approved_transport_configured",
+        "peer_keys_enrolled",
+        "address_allocation_verified",
+        "revocation_tested",
+        "routing_tested"
+      ]
+    },
+    {
+      "id": "N04",
+      "name": "AETHERNET",
+      "type": "NETWORK_ABSTRACTION",
+      "status": "DOCTRINE_ONLY",
+      "purpose": "Stable OURSELF addressing, peer discovery, route selection and relay abstraction.",
+      "acceptance": [
+        "overlay_address_registry",
+        "peer_discovery",
+        "route_policy",
+        "direct_and_relay_paths_verified"
+      ]
+    },
+    {
+      "id": "N05",
+      "name": "OSOS_GATESELFWAY",
+      "type": "IDENTITY_AUTHORITY",
+      "status": "PARTIAL_UNVERIFIED",
+      "purpose": "Cryptographic identity, authority, admission, permissions and revocation.",
+      "acceptance": [
+        "device_identity_attested",
+        "authorization_policy_bound",
+        "admission_enforced",
+        "revocation_enforced"
+      ]
+    },
+    {
+      "id": "N06",
+      "name": "PIPE_PORTAL",
+      "type": "APPLICATION_GATEWAY",
+      "status": "EXISTING_RUNTIME_REMOTE_ADMISSION_UNVERIFIED",
+      "purpose": "Authenticated operator and application access over approved transports.",
+      "acceptance": [
+        "remote_route_verified",
+        "caller_identity_bound",
+        "unauthorized_request_rejected",
+        "authorized_health_request_witnessed"
+      ]
+    },
+    {
+      "id": "N07",
+      "name": "DATASELF",
+      "type": "DURABLE_WITNESS",
+      "status": "UNVERIFIED",
+      "purpose": "Durable device, route, authority, admission, failure and recovery event records.",
+      "acceptance": [
+        "append_only_or_equivalent_integrity",
+        "event_identity",
+        "causal_linkage",
+        "retention_and_recovery_tested"
+      ]
+    },
+    {
+      "id": "N08",
+      "name": "SELFTELLIGENCE",
+      "type": "COGNITION_ORCHESTRATION",
+      "status": "REMOTE_ENTRYPOINT_UNRESOLVED",
+      "purpose": "Remote cognition and authorized orchestration through the existing MCP and bridge surfaces.",
+      "acceptance": [
+        "remote_mcp_identity_verified",
+        "authenticated_handshake",
+        "tool_inventory_verified",
+        "dispatch_receipt_bound"
+      ]
+    },
+    {
+      "id": "N09",
+      "name": "MCB",
+      "type": "MATTER_COMPILER",
+      "status": "IMPLEMENTATION_PRESENT_RUNTIME_ACTIVATION_UNVERIFIED",
+      "purpose": "Compile and test the network reality's typed matter and conformance requirements.",
+      "acceptance": [
+        "matter_manifest_compiled",
+        "conformance_tests_passed",
+        "evidence_hashes_bound"
+      ]
+    },
+    {
+      "id": "N10",
+      "name": "CHAMBOXREALITY",
+      "type": "REALITY_ACTIVATION",
+      "status": "BOOT_NOT_DISPATCHED",
+      "purpose": "Admit and witness the configured network reality as an active instance.",
+      "acceptance": [
+        "preimage_verified",
+        "authority_admitted",
+        "runtime_boot_receipt",
+        "post_boot_witness",
+        "recovery_test"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": "N00",
+      "to": "N01",
+      "relation": "ANCHOR_BEFORE_FABRIC"
+    },
+    {
+      "from": "N01",
+      "to": "N02",
+      "relation": "HOSTS_CONNECTIVITY_CONTROL"
+    },
+    {
+      "from": "N01",
+      "to": "N03",
+      "relation": "HOSTS_OR_COORDINATES_OVERLAY"
+    },
+    {
+      "from": "N02",
+      "to": "N03",
+      "relation": "PROVIDES_DEVICE_PATH_LIFECYCLE"
+    },
+    {
+      "from": "N03",
+      "to": "N04",
+      "relation": "SUPPLIES_ENCRYPTED_TRANSPORT"
+    },
+    {
+      "from": "N04",
+      "to": "N05",
+      "relation": "ROUTES_IDENTITY_BOUND_PEERS"
+    },
+    {
+      "from": "N05",
+      "to": "N06",
+      "relation": "AUTHORIZES_GATEWAY_ACCESS"
+    },
+    {
+      "from": "N06",
+      "to": "N07",
+      "relation": "EMITS_ADMISSION_AND_ACCESS_EVENTS"
+    },
+    {
+      "from": "N07",
+      "to": "N08",
+      "relation": "SUPPLIES_DURABLE_PROVENANCE"
+    },
+    {
+      "from": "N08",
+      "to": "N09",
+      "relation": "REQUESTS_BOUNDED_MATTER_COMPILATION"
+    },
+    {
+      "from": "N09",
+      "to": "N10",
+      "relation": "SUPPLIES_CONFORMANT_REALITY_PREIMAGE"
+    },
+    {
+      "from": "N10",
+      "to": "N07",
+      "relation": "EMITS_BOOT_AND_RECOVERY_WITNESS"
+    }
+  ],
+  "launch_gates": [
+    {
+      "gate_id": "NETWORK-GATE-0001",
+      "name": "HOST_ANCHOR",
+      "target": [
+        "N01"
+      ],
+      "requires": [
+        "host_inventory",
+        "custody_evidence",
+        "independent_uptime_plan"
+      ],
+      "exit": "OURHOSTSELF host and persistence proven"
+    },
+    {
+      "gate_id": "NETWORK-GATE-0002",
+      "name": "CROSS_SITE_PATH",
+      "target": [
+        "N02",
+        "N03"
+      ],
+      "requires": [
+        "device_identity",
+        "reachable_path",
+        "encrypted_peer_handshake"
+      ],
+      "exit": "SELFPI and anchor communicate across sites"
+    },
+    {
+      "gate_id": "NETWORK-GATE-0003",
+      "name": "AETHERNET_FABRIC",
+      "target": [
+        "N04"
+      ],
+      "requires": [
+        "overlay_registry",
+        "route_policy",
+        "relay_fallback"
+      ],
+      "exit": "addressing and routing verified"
+    },
+    {
+      "gate_id": "NETWORK-GATE-0004",
+      "name": "AUTHORITY_AND_GATEWAY",
+      "target": [
+        "N05",
+        "N06"
+      ],
+      "requires": [
+        "identity_binding",
+        "admission_policy",
+        "unauthorized_rejection",
+        "authorized_probe"
+      ],
+      "exit": "PIPE|PORTAL access is identity- and authority-bound"
+    },
+    {
+      "gate_id": "NETWORK-GATE-0005",
+      "name": "DURABLE_WITNESS",
+      "target": [
+        "N07"
+      ],
+      "requires": [
+        "event_schema",
+        "causal_receipts",
+        "integrity_check",
+        "recovery_check"
+      ],
+      "exit": "network state transitions are durably witnessed"
+    },
+    {
+      "gate_id": "NETWORK-GATE-0006",
+      "name": "REMOTE_COGNITION_AND_MATTER",
+      "target": [
+        "N08",
+        "N09"
+      ],
+      "requires": [
+        "remote_mcp_handshake",
+        "tool_inventory",
+        "matter_compile_receipt"
+      ],
+      "exit": "SELFTELLIGENCE can invoke bounded MCB operations"
+    },
+    {
+      "gate_id": "NETWORK-GATE-0007",
+      "name": "REALITY_BOOT",
+      "target": [
+        "N10"
+      ],
+      "requires": [
+        "all_prior_gates_complete",
+        "explicit_execution_admission",
+        "boot_receipt",
+        "post_boot_witness"
+      ],
+      "exit": "network sovereignty reality active and witnessed"
+    },
+    {
+      "gate_id": "NETWORK-GATE-0008",
+      "name": "MAC_INDEPENDENCE",
+      "target": [
+        "N01",
+        "N02",
+        "N03",
+        "N04",
+        "N06",
+        "N07",
+        "N08",
+        "N10"
+      ],
+      "requires": [
+        "controlled_mac_power_off",
+        "remote_probe",
+        "service_continuity_receipts",
+        "recovery_receipts"
+      ],
+      "exit": "critical network reality remains operational with Mac powered off"
+    }
+  ],
+  "stop_conditions": [
+    "Do not use RAWMAC or require the user to be physically present at the Mac.",
+    "Do not infer a public MCP hostname from a tunnel ID or registry URL.",
+    "Do not equate Cloudflare Tunnel with a private VPN or mesh.",
+    "Do not expose credentials, private keys or bearer tokens in graph artifacts.",
+    "Do not dispatch execution before authority and admission are verified.",
+    "Do not mark a node ACTIVE without runtime evidence and a witness receipt.",
+    "Do not power down the Mac until independent host and continuity gates are passed."
+  ],
+  "rollback": {
+    "policy": "NO_DESTRUCTIVE_REPLACEMENT",
+    "rule": "Preserve existing tunnels, routes and services. Roll back only newly admitted, gate-scoped mutations using their recorded preimages."
+  },
+  "activation": {
+    "desired_state": "ACTIVE_AND_WITNESSED",
+    "current_state": "MANIFESTED_NOT_ACTIVE",
+    "graph_manifest_grants_runtime_activation": false,
+    "final_acceptance": "All nodes required by NETWORK-GATE-0001 through NETWORK-GATE-0008 have verified evidence; Mac power-off continuity test passes."
+  }
+}
